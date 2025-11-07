@@ -25,17 +25,17 @@ import org.javagi.gtk.types.TemplateTypes;
 public class JournalApplication extends Application {
 
 	public static final Type gtype = TemplateTypes.register(JournalApplication.class);
-	private GtkBuilder builder;
-
-	public JournalApplication(MemorySegment address) {
-		super(address);
-	}
-
 	public static JournalApplication create() {
 		JournalApplication app = GObject.newInstance(gtype);
 		app.setApplicationId("ca.footeware.javagi.journal");
 		app.onActivate(app::activate);
 		return app;
+	}
+
+	private GtkBuilder builder;
+
+	public JournalApplication(MemorySegment address) {
+		super(address);
 	}
 
 	@Override
@@ -49,6 +49,20 @@ public class JournalApplication extends Application {
 			win = JournalWindow.create(this);
 		}
 		win.present();
+	}
+
+	@InstanceInit
+	public void init() {
+		var aboutAction = new SimpleAction("about", null);
+		aboutAction.onActivate(this::onAboutAction);
+		addAction(aboutAction);
+
+		var shortcutsAction = new SimpleAction("show-help-overlay", null);
+		shortcutsAction.onActivate(this::onShortcutsAction);
+		setAccelsForAction("app.show-help-overlay", new String[] { "<ctrl>question" });
+		addAction(shortcutsAction);
+
+		builder = new GtkBuilder();
 	}
 
 	// @formatter:off
@@ -77,20 +91,6 @@ public class JournalApplication extends Application {
         about.present(this.getActiveWindow());
  	}
  	// @formatter:on
-
-	@InstanceInit
-	public void init() {
-		var aboutAction = new SimpleAction("about", null);
-		aboutAction.onActivate(this::onAboutAction);
-		addAction(aboutAction);
-
-		var shortcutsAction = new SimpleAction("show-help-overlay", null);
-		shortcutsAction.onActivate(this::onShortcutsAction);
-		setAccelsForAction("app.show-help-overlay", new String[] { "<ctrl>question" });
-		addAction(shortcutsAction);
-
-		builder = new GtkBuilder();
-	}
 
 	private void onShortcutsAction(Variant variant1) {
 		try {

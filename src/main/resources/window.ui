@@ -103,86 +103,84 @@
                     <child>
                       <object class="AdwViewStackPage">
                         <property name="child">
-                          <object class="AdwClamp" id="new_page_box">
-                            <property name="child">
-                              <object class="GtkBox">
-                                <property name="hexpand">True</property>
+                          <object class="GtkBox">
+                            <property name="hexpand">True</property>
+                            <property name="margin-bottom">20</property>
+                            <property name="margin-end">20</property>
+                            <property name="margin-start">20</property>
+                            <property name="margin-top">20</property>
+                            <property name="orientation">vertical</property>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="css-classes">heading</property>
+                                <property name="justify">center</property>
+                                <property name="label">Create a new journal.</property>
                                 <property name="margin-bottom">20</property>
-                                <property name="margin-end">20</property>
-                                <property name="margin-start">20</property>
-                                <property name="margin-top">20</property>
-                                <property name="orientation">vertical</property>
-                                <property name="spacing">10</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="AdwPreferencesGroup">
+                                <property name="hexpand">True</property>
+                                <property name="hexpand-set">True</property>
                                 <child>
-                                  <object class="GtkLabel">
-                                    <property name="css-classes">heading</property>
-                                    <property name="justify">center</property>
-                                    <property name="label">Create a new journal.</property>
-                                    <property name="margin-bottom">20</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="AdwPreferencesGroup">
-                                    <child>
-                                      <object class="AdwActionRow">
-                                        <property name="accessible-role">row</property>
+                                  <object class="AdwActionRow">
+                                    <property name="accessible-role">row</property>
+                                    <property name="action-name">win.new_browse_for_folder</property>
+                                    <property name="activatable">True</property>
+                                    <property name="hexpand">True</property>
+                                    <property name="title">Journal location</property>
+                                    <property name="valign">center</property>
+                                    <child type="suffix">
+                                      <object class="GtkButton">
                                         <property name="action-name">win.new_browse_for_folder</property>
-                                        <property name="activatable">True</property>
-                                        <property name="hexpand">True</property>
-                                        <property name="title">Journal location</property>
-                                        <property name="valign">center</property>
-                                        <child type="suffix">
-                                          <object class="GtkButton">
-                                            <property name="action-name">win.new_browse_for_folder</property>
-                                            <property name="child">
-                                              <object class="AdwButtonContent" id="new_journal_location">
-                                                <property name="icon-name">document-open</property>
-                                                <property name="label">Browse</property>
-                                              </object>
-                                            </property>
-                                            <property name="halign">end</property>
-                                            <property name="margin-bottom">10</property>
-                                            <property name="margin-top">10</property>
+                                        <property name="child">
+                                          <object class="AdwButtonContent" id="new_journal_location">
+                                            <property name="icon-name">document-open</property>
+                                            <property name="label">Browse</property>
                                           </object>
-                                        </child>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="AdwEntryRow" id="new_journal_name">
-                                        <property name="input-hints">spellcheck</property>
-                                        <property name="title">New journal name</property>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="AdwPasswordEntryRow" id="new_journal_password_1">
-                                        <property name="input-hints">no-spellcheck|private</property>
-                                        <property name="title">Password</property>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="AdwPasswordEntryRow" id="new_journal_password_2">
-                                        <property name="input-hints">no-spellcheck|private</property>
-                                        <property name="title">Password again</property>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="AdwButtonRow">
-                                        <property name="action-name">win.create_journal</property>
-                                        <property name="title">Create Journal</property>
+                                        </property>
+                                        <property name="halign">end</property>
+                                        <property name="margin-bottom">10</property>
+                                        <property name="margin-top">10</property>
+                                        <property name="valign">center</property>
                                       </object>
                                     </child>
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="GtkImage">
-                                    <property name="height-request">100</property>
-                                    <property name="margin-top">20</property>
-                                    <property name="pixel-size">75</property>
-                                    <property name="resource">/journal/key.svg</property>
+                                  <object class="AdwEntryRow" id="new_journal_name">
+                                    <property name="input-hints">spellcheck</property>
+                                    <property name="title">New journal name</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="AdwPasswordEntryRow" id="new_journal_password_1">
+                                    <property name="input-hints">no-spellcheck|private</property>
+                                    <property name="title">Password</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="AdwPasswordEntryRow" id="new_journal_password_2">
+                                    <property name="input-hints">no-spellcheck|private</property>
+                                    <property name="title">Password again</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="AdwButtonRow">
+                                    <property name="action-name">win.create_journal</property>
+                                    <property name="title">Create Journal</property>
                                   </object>
                                 </child>
                               </object>
-                            </property>
+                            </child>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="height-request">100</property>
+                                <property name="margin-top">20</property>
+                                <property name="pixel-size">75</property>
+                                <property name="resource">/journal/key.svg</property>
+                              </object>
+                            </child>
                           </object>
                         </property>
                         <property name="name">new-page</property>
