@@ -1,0 +1,108 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+  
+	<groupId>ca.footeware</groupId>
+	<artifactId>javagi.journal</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	
+	<properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>25</maven.compiler.source>
+        <maven.compiler.target>25</maven.compiler.target>
+    </properties>
+  
+	<dependencies>
+		<dependency>
+		    <groupId>org.java-gi</groupId>
+		    <artifactId>adw</artifactId>
+		    <version>0.13.0-RC1</version>
+		</dependency>
+  	</dependencies>
+  	
+  	<build>
+  		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+			<resource>
+				<directory>resources-filtered</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+        <plugins>
+            <plugin>
+				<groupId>ca.footeware</groupId>
+				<artifactId>flatpak-maven-plugin</artifactId>
+				<version>1.0.4-SNAPSHOT</version>
+				<configuration>
+					<mainClass>ca.footeware.javagi.journal.Main</mainClass>
+					<modules>false</modules>
+					<runtime>org.gnome.Platform</runtime>
+					<runtimeVersion>49</runtimeVersion>
+					<sdk>org.gnome.Sdk</sdk>
+					<categories>Office,Utility</categories>
+					<iconFile>${project.build.directory}/classes/journal-javagi.svg</iconFile>
+					<manifest>
+						<appId>ca.footeware.javagi.journal</appId>
+						<sdkExtensions>
+							<sdkExtension>org.freedesktop.Sdk.Extension.openjdk25</sdkExtension>
+						</sdkExtensions>
+						<finishArgs>
+							<finishArg>--socket=session-bus</finishArg>
+							<finishArg>--socket=wayland</finishArg>
+							<finishArg>--socket=ssh-auth</finishArg>
+							<finishArg>--device=dri</finishArg>
+							<finishArg>--share=network</finishArg>
+							<finishArg>--share=ipc</finishArg>
+							<finishArg>--filesystem=home</finishArg>
+							<finishArg>--env=PATH=/app/jre/bin:/app/bin:/usr/bin</finishArg>
+							<finishArg>--env=JAVA_HOME=/app/jre</finishArg>
+						</finishArgs>
+					</manifest>
+				</configuration>
+			</plugin>
+        </plugins>
+  	</build>
+  	
+  	<name>${project.groupId}}.${project.artifactId}</name>
+
+	<description>An encrypted daily journal, written in Java using Java-GI bindings to the Gtk4/Adw toolkit.</description>
+
+	<url>https://github.com/CraigFoote/ca.footeware.javagi.journal</url>
+
+	<!--See https://spdx.org/licenses/-->
+	<licenses>
+		<!--must be included for flatpak plugin -->
+		<license>
+			<name>GPL-3.0-or-later</name>
+			<url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+			<comments>project</comments>
+		</license>
+		<!--defaults to FSFAP if omitted -->
+		<license>
+			<name>FSFAP</name>
+			<url>https://spdx.org/licenses/GPL-3.0-or-later.html</url>
+			<distribution>repo</distribution>
+			<comments>metadata</comments>
+		</license>
+	</licenses>
+
+	<!--must be included for flatpak plugin -->
+	<developers>
+		<developer>
+			<!--must be reverse DNS notation-->
+			<id>ca.footeware.craigfoote</id> <!--required-->
+			<name>Craig Foote</name> <!--required-->
+			<email>CraigFoote@gmail.com</email> <!--optional-->
+			<organization>Footeware</organization> <!--optional-->
+			<organizationUrl>https://footeware.ca</organizationUrl> <!--optional-->
+			<roles><!--optional-->
+				<role>developer</role>
+			</roles>
+			<timezone>America/Toronto</timezone> <!--optional-->
+		</developer>
+	</developers>
+</project>
