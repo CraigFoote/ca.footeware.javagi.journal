@@ -25,6 +25,7 @@ import org.javagi.gtk.types.TemplateTypes;
 public class JournalWindow extends ApplicationWindow {
 
 	private static Application app;
+	private File file = null;
 	public static final Type gtype = TemplateTypes.register(JournalWindow.class);
 
 	public static JournalWindow create(Application app) {
@@ -39,9 +40,6 @@ public class JournalWindow extends ApplicationWindow {
 
 	@GtkChild(name = "new_journal_location")
 	public ButtonContent newJournalLocationButton;
-
-	@GtkChild(name = "new_journal_name")
-	public EntryRow newJournalName;
 
 	@GtkChild(name = "new_journal_password_1")
 	public PasswordEntryRow newJournalPassword1;
@@ -90,10 +88,10 @@ public class JournalWindow extends ApplicationWindow {
 		newBrowseAction.onActivate((SimpleAction.ActivateCallback) _ -> {
 			// prompt for folder
 			FileDialog fileDialog = new FileDialog();
-			fileDialog.selectFolder(this, null, (_, result, _) -> {
+			fileDialog.save(this, null, (_, result, _) -> {
 				try {
-					File folder = fileDialog.selectFolderFinish(result);
-					newJournalLocationButton.setLabel(folder.getPath());
+					file = fileDialog.saveFinish(result);
+					newJournalLocationButton.setLabel(file.getPath());
 				} catch (GErrorException _) {
 					// ignore - user closed dialog
 				}
@@ -104,19 +102,13 @@ public class JournalWindow extends ApplicationWindow {
 		// Create New Journal action
 		var createNewJournalAction = new SimpleAction("create_journal", null);
 		createNewJournalAction.onActivate((SimpleAction.ActivateCallback) _ -> {
-			String folderName = newJournalLocationButton.getLabel();
-			String journalName = newJournalName.getText();
 			String password1 = newJournalPassword1.getText();
 			String password2 = newJournalPassword2.getText();
-			if (validate(folderName, journalName, password1, password2)) {
-				System.out.println("Hello");
+			if (!password1.isEmpty() && !password2.isEmpty() && password1.equals(password2)) {
+				System.out.println(file);
 			}
 		});
 		addAction(createNewJournalAction);
 	}
 
-	private boolean validate(String folderName, String journalName, String password1, String password2) {
-		return !folderName.isEmpty() && !journalName.isEmpty() && !password1.isEmpty() && !password2.isEmpty()
-				&& password1.equals(password2);
-	}
 }
