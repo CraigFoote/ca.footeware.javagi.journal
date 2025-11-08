@@ -1,11 +1,11 @@
 package ca.footeware.javagi.journal;
 
+import java.io.IOException;
 import java.lang.foreign.MemorySegment;
 
 import org.gnome.adw.Application;
 import org.gnome.adw.ApplicationWindow;
 import org.gnome.adw.ButtonContent;
-import org.gnome.adw.EntryRow;
 import org.gnome.adw.PasswordEntryRow;
 import org.gnome.adw.ViewStack;
 import org.gnome.adw.WindowTitle;
@@ -20,6 +20,9 @@ import org.javagi.gobject.annotations.InstanceInit;
 import org.javagi.gtk.annotations.GtkChild;
 import org.javagi.gtk.annotations.GtkTemplate;
 import org.javagi.gtk.types.TemplateTypes;
+
+import ca.footeware.javagi.journal.model.JournalException;
+import ca.footeware.javagi.journal.model.JournalManager;
 
 @GtkTemplate(name = "JournalWindow", ui = "/journal/window.ui")
 public class JournalWindow extends ApplicationWindow {
@@ -90,7 +93,7 @@ public class JournalWindow extends ApplicationWindow {
 			FileDialog fileDialog = new FileDialog();
 			fileDialog.save(this, null, (_, result, _) -> {
 				try {
-					file = fileDialog.saveFinish(result);
+					this.file = fileDialog.saveFinish(result);
 					newJournalLocationButton.setLabel(file.getPath());
 				} catch (GErrorException _) {
 					// ignore - user closed dialog
@@ -104,8 +107,16 @@ public class JournalWindow extends ApplicationWindow {
 		createNewJournalAction.onActivate((SimpleAction.ActivateCallback) _ -> {
 			String password1 = newJournalPassword1.getText();
 			String password2 = newJournalPassword2.getText();
-			if (!password1.isEmpty() && !password2.isEmpty() && password1.equals(password2)) {
-				System.out.println(file);
+			if (this.file != null && !password1.isEmpty() && !password2.isEmpty() && password1.equals(password2)) {
+				try {
+					JournalManager.createNewJournal(this.file, password2);
+					JournalManager.saveJournal();
+					stack.setVisibleChildName("editor-page");
+					backButton.actionSetEnabled("win.create_journal", false);
+				} catch (IOException | JournalException e) {
+					// TODO notify user
+					e.printStackTrace();
+				}
 			}
 		});
 		addAction(createNewJournalAction);

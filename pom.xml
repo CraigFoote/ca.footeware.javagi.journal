@@ -31,7 +31,28 @@
 				<filtering>true</filtering>
 			</resource>
 		</resources>
+		
         <plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+			  	<artifactId>exec-maven-plugin</artifactId>
+			  	<version>3.6.2</version>
+			  	<executions>
+				    <execution>
+				    	<id>gresource-compiling</id>
+	      				<phase>initialize</phase>
+				      	<goals>
+				        	<goal>exec</goal>
+				      	</goals>
+				    </execution>
+			  </executions>
+			  <configuration>
+			        <executable>/usr/bin/glib-compile-resources</executable>
+			        <workingDirectory>${project.basedir}/src/main/resources/</workingDirectory>
+			        <commandlineArgs>${project.basedir}/src/main/resources/journal.gresource.xml</commandlineArgs>
+			      </configuration>
+			</plugin>
+
             <plugin>
 				<groupId>ca.footeware</groupId>
 				<artifactId>flatpak-maven-plugin</artifactId>
