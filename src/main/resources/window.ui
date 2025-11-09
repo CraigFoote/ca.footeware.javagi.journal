@@ -111,6 +111,7 @@
                             <property name="margin-top">20</property>
                             <property name="orientation">vertical</property>
                             <property name="spacing">20</property>
+                            <property name="valign">start</property>
                             <child>
                               <object class="GtkLabel">
                                 <property name="css-classes">heading</property>
@@ -174,6 +175,7 @@
                                 <property name="margin-top">20</property>
                                 <property name="pixel-size">75</property>
                                 <property name="resource">/journal/key.svg</property>
+                                <property name="valign">start</property>
                               </object>
                             </child>
                           </object>
@@ -192,6 +194,7 @@
                             <property name="margin-top">20</property>
                             <property name="orientation">vertical</property>
                             <property name="spacing">20</property>
+                            <property name="valign">start</property>
                             <child>
                               <object class="GtkLabel">
                                 <property name="css-classes">heading</property>
@@ -248,6 +251,7 @@
                                 <property name="margin-top">20</property>
                                 <property name="pixel-size">75</property>
                                 <property name="resource">/journal/key.svg</property>
+                                <property name="valign">start</property>
                               </object>
                             </child>
                           </object>

@@ -5,6 +5,7 @@ import java.lang.foreign.MemorySegment;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.gnome.adw.AlertDialog;
 import org.gnome.adw.Application;
 import org.gnome.adw.ApplicationWindow;
 import org.gnome.adw.ButtonContent;
@@ -27,6 +28,7 @@ import org.gnome.gtk.Gtk;
 import org.gnome.gtk.TextBuffer;
 import org.gnome.gtk.TextIter;
 import org.gnome.gtk.TextView;
+import org.gnome.gtk.WrapMode;
 import org.javagi.base.GErrorException;
 import org.javagi.gobject.annotations.InstanceInit;
 import org.javagi.gtk.annotations.GtkCallback;
@@ -77,6 +79,8 @@ public class JournalWindow extends ApplicationWindow {
 	@GtkChild(name = "new_journal_password_2")
 	public PasswordEntryRow newJournalPassword2;
 
+	private CssProvider provider = new CssProvider();
+
 	@GtkChild(name = "stack")
 	public ViewStack stack;
 
@@ -88,8 +92,6 @@ public class JournalWindow extends ApplicationWindow {
 
 	@GtkChild(name = "window_title")
 	public WindowTitle windowTitle;
-
-	private CssProvider provider = new CssProvider();
 
 	/**
 	 * Constructor.
@@ -139,9 +141,7 @@ public class JournalWindow extends ApplicationWindow {
 	private void createNewJournalPageActions() {
 		// New -> Browse action
 		var newBrowseAction = new SimpleAction("new_browse_for_folder", null);
-		newBrowseAction.onActivate(_ -> {
-			onNewBrowseAction();
-		});
+		newBrowseAction.onActivate(_ -> onNewBrowseAction());
 		super.addAction(newBrowseAction);
 
 		// Create New Journal action
@@ -188,38 +188,42 @@ public class JournalWindow extends ApplicationWindow {
 		super.addAction(openPageAction);
 	}
 
+	private void displayDate(LocalDate localDate) {
+		TextBuffer buffer = textView.getBuffer();
+		if (JournalManager.hasDate(localDate)) {
+			try {
+				String entry = JournalManager.getEntry(localDate);
+				buffer.setText(entry, entry.length());
+			} catch (JournalException e) {
+				this.notifyUser(e.getMessage());
+			}
+		} else {
+			buffer.setText("", 0);
+		}
+	}
+
 	/**
 	 * Called after injection of objects annotated @GtkChild.
 	 */
 	@InstanceInit
 	public void init() {
+		// css
+		this.provider.loadFromResource("/journal/styles.css");
+		Gtk.styleContextAddProviderForDisplay(Display.getDefault(), provider, 500);
+
+		// actions
 		createPageNavigationActions();
 		createNewJournalPageActions();
 		createOpenJournalPageActions();
 		createEditorPageActions();
 		createCalendarNavigationButtonActions();
 
-		// css
-		provider.loadFromResource("/journal/styles.css");
-		Gtk.styleContextAddProviderForDisplay(Display.getDefault(), provider, 500);
-	}
-
-	@GtkCallback(name = "onDateSelected")
-	public void onDateSelected() {
-		DateTime dateTime = calendar.getDate();
-		LocalDate localDate = LocalDate.of(dateTime.getYear(), dateTime.getMonth(), dateTime.getDayOfMonth());
-		try {
-			String entry = JournalManager.getEntry(localDate);
-			TextBuffer buffer = textView.getBuffer();
-			if (entry != null) {
-				buffer.setText(entry, entry.length());
-			} else {
-				buffer.setText("", 0);
-			}
-		} catch (JournalException e) {
-			TextBuffer buffer = textView.getBuffer();
-			buffer.setText("", 0);
-		}
+		// configure TextView
+		textView.setWrapMode(WrapMode.WORD);
+		textView.getBuffer().onModifiedChanged(() -> {
+			this.textView.getBuffer().setModified(true);
+			this.updateWindowTitle();
+		});
 	}
 
 	private void notifyUser(String message) {
@@ -239,6 +243,43 @@ public class JournalWindow extends ApplicationWindow {
 			} catch (IOException | JournalException e) {
 				this.notifyUser(e.getMessage());
 			}
+		}
+	}
+
+	@GtkCallback(name = "onDateSelected")
+	public void onDateSelected() {
+		DateTime dateTime = calendar.getDate();
+		// convert
+		LocalDate localDate = LocalDate.of(dateTime.getYear(), dateTime.getMonth(), dateTime.getDayOfMonth());
+		if (textView.getBuffer().getModified()) {
+			AlertDialog alert = new AlertDialog("Unsaved Changes", "@TODO add date to message");
+			alert.addResponse("discard", "Discard");
+			alert.addResponse("save", "Save");
+			alert.setCloseResponse("cancel");
+			alert.setDefaultResponse("save");
+			alert.choose(this, null, (a, result, b) -> {
+				System.err.println(a);
+				System.err.println(b);
+				String button = ((AlertDialog) result.getSourceObject()).chooseFinish(result);
+				switch (button) {
+				case "save": {
+					save(localDate);
+					break;
+				}
+				case "discard": {
+					displayDate(localDate);
+					break;
+				}
+				case "cancel": {
+					// do nothing but close dialog
+					break;
+				}
+				default:
+					throw new IllegalArgumentException("Unexpected value: " + button);
+				}
+			});
+		} else {
+			displayDate(localDate);
 		}
 	}
 
@@ -289,11 +330,14 @@ public class JournalWindow extends ApplicationWindow {
 				LocalDate now = LocalDate.now();
 				for (LocalDate localDate : entryDates) {
 					if (localDate.getYear() == now.getYear() && localDate.getMonth() == now.getMonth()) {
-						System.out.println("marking " + localDate.getDayOfMonth());
 						calendar.markDay(localDate.getDayOfMonth());
 					}
 				}
 				this.textView.grabFocus();
+				this.calendar.selectDay(DateTime.nowLocal());
+				this.textView.getBuffer().setModified(false);
+				this.displayDate(LocalDate.now());
+				this.updateWindowTitle();
 			} catch (JournalException e) {
 				this.notifyUser(e.getMessage());
 			}
@@ -305,17 +349,19 @@ public class JournalWindow extends ApplicationWindow {
 	}
 
 	private void onSaveAction() {
-		TextBuffer buffer = textView.getBuffer();
+		TextBuffer buffer = this.textView.getBuffer();
 		TextIter startIter = new TextIter();
 		TextIter endIter = new TextIter();
 		buffer.getStartIter(startIter);
 		buffer.getEndIter(endIter);
 		String text = buffer.getText(startIter, endIter, true);
-		DateTime dateTime = calendar.getDate();
+		DateTime dateTime = this.calendar.getDate();
 		LocalDate localDate = LocalDate.of(dateTime.getYear(), dateTime.getMonth(), dateTime.getDayOfMonth());
 		try {
 			JournalManager.addEntry(localDate, text);
 			JournalManager.saveJournal();
+			this.textView.getBuffer().setModified(false);
+			this.updateWindowTitle();
 			this.notifyUser("Journal was saved.");
 		} catch (JournalException e) {
 			this.notifyUser(e.getMessage());
@@ -323,7 +369,28 @@ public class JournalWindow extends ApplicationWindow {
 	}
 
 	private void onTodayAction() {
-		// TODO
+		this.calendar.selectDay(DateTime.nowLocal());
+	}
+
+	private void save(LocalDate date) {
+		TextIter startIter = new TextIter();
+		TextIter endIter = new TextIter();
+		String text = textView.getBuffer().getText(startIter, endIter, true);
+		try {
+			JournalManager.addEntry(date, text);
+			JournalManager.saveJournal();
+		} catch (JournalException e) {
+			notifyUser(e.getMessage());
+		}
+	}
+
+	/**
+	 * Updates the window subtitle to a modified-indicator and the current filename.
+	 * When no file is open, the subtitle is "An encrypted daily journal".
+	 */
+	private void updateWindowTitle() {
+		this.windowTitle.setTitle((this.textView.getBuffer().getModified() ? "• " : "") + "Journal");
+		this.windowTitle.setSubtitle(this.file == null ? "An encrypted daily journal" : this.file.getPath());
 	}
 
 }
