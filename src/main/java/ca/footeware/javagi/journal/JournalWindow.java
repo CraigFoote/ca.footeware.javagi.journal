@@ -2,19 +2,27 @@ package ca.footeware.javagi.journal;
 
 import java.io.IOException;
 import java.lang.foreign.MemorySegment;
+import java.time.LocalDate;
 
 import org.gnome.adw.Application;
 import org.gnome.adw.ApplicationWindow;
 import org.gnome.adw.ButtonContent;
 import org.gnome.adw.PasswordEntryRow;
+import org.gnome.adw.Toast;
+import org.gnome.adw.ToastOverlay;
 import org.gnome.adw.ViewStack;
 import org.gnome.adw.WindowTitle;
 import org.gnome.gio.File;
 import org.gnome.gio.SimpleAction;
+import org.gnome.glib.DateTime;
 import org.gnome.glib.Type;
 import org.gnome.gobject.GObject;
 import org.gnome.gtk.Button;
+import org.gnome.gtk.Calendar;
 import org.gnome.gtk.FileDialog;
+import org.gnome.gtk.TextBuffer;
+import org.gnome.gtk.TextIter;
+import org.gnome.gtk.TextView;
 import org.javagi.base.GErrorException;
 import org.javagi.gobject.annotations.InstanceInit;
 import org.javagi.gtk.annotations.GtkChild;
@@ -31,6 +39,12 @@ public class JournalWindow extends ApplicationWindow {
 	private File file = null;
 	public static final Type gtype = TemplateTypes.register(JournalWindow.class);
 
+	/**
+	 * Create a new {@link JournalWindow} with provided {@link Application}.
+	 * 
+	 * @param app {@link Application}
+	 * @return {@link JournalWindow}
+	 */
 	public static JournalWindow create(Application app) {
 		JournalWindow.app = app;
 		JournalWindow win = GObject.newInstance(gtype);
@@ -56,10 +70,30 @@ public class JournalWindow extends ApplicationWindow {
 	@GtkChild(name = "window_title")
 	public WindowTitle windowTitle;
 
+	@GtkChild(name = "toaster")
+	public ToastOverlay toaster;
+
+	@GtkChild(name = "textview")
+	public TextView textView;
+
+	@GtkChild(name = "save_button")
+	public Button saveButton;
+
+	@GtkChild(name = "calendar")
+	public Calendar calendar;
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param address {@link MemorySegment}
+	 */
 	public JournalWindow(MemorySegment address) {
 		super(address);
 	}
 
+	/**
+	 * Called after injection of objects annotated @GtkChild.
+	 */
 	@InstanceInit
 	public void init() {
 		// Back action
@@ -112,14 +146,39 @@ public class JournalWindow extends ApplicationWindow {
 					JournalManager.createNewJournal(this.file, password2);
 					JournalManager.saveJournal();
 					stack.setVisibleChildName("editor-page");
-					backButton.actionSetEnabled("win.create_journal", false);
+					backButton.setVisible(false);
 				} catch (IOException | JournalException e) {
-					// TODO notify user
-					e.printStackTrace();
+					notifyUser(e.getMessage());
 				}
 			}
 		});
 		addAction(createNewJournalAction);
+
+		// Save action
+		var saveAction = new SimpleAction("save_journal", null);
+		saveAction.onActivate((SimpleAction.ActivateCallback) _ -> {
+			TextBuffer buffer = textView.getBuffer();
+			TextIter startIter = new TextIter();
+			TextIter endIter = new TextIter();
+			buffer.getStartIter(startIter);
+			buffer.getEndIter(endIter);
+			String text = buffer.getText(startIter, endIter, true);
+			DateTime dateTime = calendar.getDate();
+			LocalDate localDate = LocalDate.of(dateTime.getYear(), dateTime.getMonth(), dateTime.getDayOfMonth());
+			try {
+				JournalManager.addEntry(localDate, text);
+				JournalManager.saveJournal();
+				notifyUser("Journal was saved.");
+			} catch (JournalException e) {
+				notifyUser(e.getMessage());
+			}
+		});
+		addAction(saveAction);
+	}
+
+	private void notifyUser(String message) {
+		Toast toast = new Toast(message);
+		toaster.addToast(toast);
 	}
 
 }
