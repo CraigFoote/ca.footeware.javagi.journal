@@ -264,7 +264,9 @@
                               <object class="AdwClamp">
                                 <child>
                                   <object class="GtkCalendar" id="calendar">
+                                    <property name="has-tooltip">True</property>
                                     <property name="hexpand">True</property>
+                                    <signal name="day-selected" handler="onDateSelected"/>
                                   </object>
                                 </child>
                               </object>
@@ -350,6 +352,8 @@
         </child>
       </object>
     </property>
+    <property name="default-height">800</property>
+    <property name="default-width">600</property>
   </template>
   <menu id="primary_menu">
     <section>

@@ -46,13 +46,13 @@ public class JournalManager {
 
 	/**
 	 * Creates a new journal in the provided file using the provided password.
-	 * 
+	 *
 	 * @param file     {@link org.gnome.gio.File}
 	 * @param password {@link String}
 	 * @throws IOException
 	 */
-	public static void createNewJournal(org.gnome.gio.File file, String password) throws IOException {
-		createNewJournal(file.getPath(), password);
+	public static void createJournal(org.gnome.gio.File file, String password) throws IOException {
+		createJournal(file.getPath(), password);
 	}
 
 	/**
@@ -64,7 +64,7 @@ public class JournalManager {
 	 * @param password {@link String}
 	 * @throws IOException
 	 */
-	public static void createNewJournal(String pathName, String password) throws IOException {
+	public static void createJournal(String pathName, String password) throws IOException {
 		File file = new File(pathName);
 		if (file.exists()) {
 			// nasty but the Gtk FileDialog would have prompted us to overwrite
@@ -234,6 +234,21 @@ public class JournalManager {
 	 */
 	public static boolean hasDate(LocalDate date) {
 		return getEntryDates().contains(date);
+	}
+
+	/**
+	 * OPens an existing journal in provided file with provided password.
+	 * 
+	 * @param file     {@link org.gnome.gio.File}
+	 * @param password {@link String}
+	 * @throws JournalException
+	 */
+	public static void openJournal(org.gnome.gio.File file, String password) throws JournalException {
+		try {
+			openJournal(file.getPath(), password);
+		} catch (IOException e) {
+			throw new JournalException(e.getMessage(), e);
+		}
 	}
 
 	/**
