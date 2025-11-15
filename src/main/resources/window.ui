@@ -5,10 +5,10 @@
   <!-- interface-description An encrypted daily journal. -->
   <!-- interface-copyright Footeware.ca -->
   <!-- interface-authors Craig Foote -->
-  <requires lib="Adw" version="1.7"/>
-  <requires lib="gio" version="2.0"/>
-  <requires lib="gtk" version="4.0"/>
-  <requires lib="libadwaita" version="1.7"/>
+  <requires lib="Adw" version="1.7" />
+  <requires lib="gio" version="2.0" />
+  <requires lib="gtk" version="4.0" />
+  <requires lib="libadwaita" version="1.7" />
   <template class="JournalWindow" parent="AdwApplicationWindow">
     <property name="content">
       <object class="AdwToolbarView">
@@ -67,10 +67,10 @@
                                 <property name="spacing">10</property>
                                 <property name="vexpand">True</property>
                                 <child>
-                                  <object class="GtkPicture">
-                                    <property name="file">resource:///journal/journal.svg</property>
-                                    <property name="height-request">20</property>
+                                  <object class="GtkImage">
                                     <property name="margin-bottom">20</property>
+                                    <property name="pixel-size">125</property>
+                                    <property name="resource">/journal/journal.png</property>
                                   </object>
                                 </child>
                                 <child>
@@ -86,7 +86,7 @@
                                       <object class="AdwButtonRow" id="open_button">
                                         <property name="action-name">win.open</property>
                                         <property name="start-icon-name">document-open-symbolic</property>
-                                        <property name="title">Open </property>
+                                        <property name="title">Open</property>
                                       </object>
                                     </child>
                                   </object>
@@ -145,7 +145,7 @@
                                         <property name="margin-bottom">10</property>
                                         <property name="margin-top">10</property>
                                         <property name="valign">center</property>
-                                        <style/>
+                                        <style />
                                       </object>
                                     </child>
                                   </object>
@@ -166,7 +166,7 @@
                                   <object class="AdwButtonRow">
                                     <property name="action-name">win.create_journal</property>
                                     <property name="title">＋ Create Journal</property>
-                                    <style/>
+                                    <style />
                                   </object>
                                 </child>
                               </object>
@@ -229,7 +229,7 @@
                                         <property name="halign">end</property>
                                         <property name="margin-bottom">10</property>
                                         <property name="margin-top">10</property>
-                                        <style/>
+                                        <style />
                                       </object>
                                     </child>
                                   </object>
@@ -244,7 +244,7 @@
                                   <object class="AdwButtonRow">
                                     <property name="action-name">win.open_journal</property>
                                     <property name="title">Open Journal</property>
-                                    <style/>
+                                    <style />
                                   </object>
                                 </child>
                               </object>
@@ -274,7 +274,7 @@
                                   <object class="GtkCalendar" id="calendar">
                                     <property name="has-tooltip">True</property>
                                     <property name="hexpand">True</property>
-                                    <signal name="day-selected" handler="onDateSelected"/>
+                                    <signal name="day-selected" handler="onDateSelected" />
                                   </object>
                                 </child>
                               </object>
@@ -367,7 +367,8 @@
     <section>
       <item>
         <attribute name="action">app.show-help-overlay</attribute>
-        <attribute name="label" translatable="yes">_Keyboard Shortcuts</attribute>
+        <attribute name="label" translatable="yes">_Keyboard Shortcuts
+        </attribute>
       </item>
       <item>
         <attribute name="action">app.about</attribute>
