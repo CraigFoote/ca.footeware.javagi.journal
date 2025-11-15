@@ -89,7 +89,7 @@
 					<runtime>org.gnome.Platform</runtime>
 					<runtimeVersion>49</runtimeVersion>
 					<sdk>org.gnome.Sdk</sdk>
-					<categories>Office,Utility</categories>
+					<categories>Office;Utility</categories>
 					<iconFile>${project.build.directory}/classes/journal-javagi.svg</iconFile>
 					<manifest>
 						<appId>ca.footeware.javagi.journal</appId>

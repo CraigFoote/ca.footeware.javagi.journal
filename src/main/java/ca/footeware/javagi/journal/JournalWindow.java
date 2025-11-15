@@ -3,6 +3,7 @@ package ca.footeware.javagi.journal;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.gnome.adw.AlertDialog;
@@ -91,7 +92,6 @@ public class JournalWindow extends ApplicationWindow {
 	 * @param application {@link Application}
 	 */
 	public JournalWindow(Application application) {
-		System.out.println("JournalWindow constructor:\t\t\t" + System.currentTimeMillis());
 		setApplication(application);
 		present();
 	}
@@ -457,5 +457,28 @@ public class JournalWindow extends ApplicationWindow {
 	@Override
 	public String toString() {
 		return "JournalWindow [file=" + file + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + Objects.hash(stack);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		JournalWindow other = (JournalWindow) obj;
+		return Objects.equals(stack, other.stack);
 	}
 }

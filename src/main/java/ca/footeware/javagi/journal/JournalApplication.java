@@ -2,6 +2,7 @@ package ca.footeware.javagi.journal;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 import java.util.Properties;
 
 import org.gnome.adw.AboutDialog;
@@ -50,7 +51,6 @@ public class JournalApplication extends Application {
 
 		Window win = this.getActiveWindow();
 		if (win == null) {
-			System.out.println("About to call JournalWindow constructor:\t" + System.currentTimeMillis());
 			win = new JournalWindow(this);
 		}
 		win.present();
@@ -104,5 +104,28 @@ public class JournalApplication extends Application {
 		} catch (GErrorException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + Objects.hash(builder);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		JournalApplication other = (JournalApplication) obj;
+		return Objects.equals(builder, other.builder);
 	}
 }

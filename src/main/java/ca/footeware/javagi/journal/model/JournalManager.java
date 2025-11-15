@@ -5,6 +5,7 @@ package ca.footeware.javagi.journal.model;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -71,10 +72,7 @@ public class JournalManager {
 			if (!file.canWrite()) {
 				throw new IOException("Unknown error, file cannot be written to.");
 			}
-			boolean deleted = file.delete();
-			if (!deleted) {
-				throw new IOException("Unknown error, file was not overwritten.");
-			}
+			Files.delete(file.toPath());
 		}
 		boolean newFile = file.createNewFile();
 		if (!newFile) {
@@ -238,7 +236,7 @@ public class JournalManager {
 
 	/**
 	 * OPens an existing journal in provided file with provided password.
-	 * 
+	 *
 	 * @param file     {@link org.gnome.gio.File}
 	 * @param password {@link String}
 	 * @throws JournalException
