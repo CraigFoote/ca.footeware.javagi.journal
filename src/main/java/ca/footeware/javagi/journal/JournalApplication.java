@@ -2,16 +2,15 @@ package ca.footeware.javagi.journal;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.foreign.MemorySegment;
 import java.util.Properties;
 
 import org.gnome.adw.AboutDialog;
 import org.gnome.adw.Application;
 import org.gnome.gdk.Display;
+import org.gnome.gio.ApplicationFlags;
+import org.gnome.gio.Resource;
 import org.gnome.gio.SimpleAction;
-import org.gnome.glib.Type;
 import org.gnome.glib.Variant;
-import org.gnome.gobject.GObject;
 import org.gnome.gtk.GtkBuilder;
 import org.gnome.gtk.IconTheme;
 import org.gnome.gtk.License;
@@ -19,23 +18,20 @@ import org.gnome.gtk.Window;
 import org.javagi.base.GErrorException;
 import org.javagi.gobject.annotations.InstanceInit;
 import org.javagi.gobject.annotations.RegisteredType;
-import org.javagi.gtk.types.TemplateTypes;
 
 @RegisteredType(name = "JournalApplication")
 public class JournalApplication extends Application {
 
-	public static final Type gtype = TemplateTypes.register(JournalApplication.class);
-	public static JournalApplication create() {
-		JournalApplication app = GObject.newInstance(gtype);
-		app.setApplicationId("ca.footeware.javagi.journal");
-		app.onActivate(app::activate);
-		return app;
+	public static void main(String[] args) {
+		var app = new JournalApplication();
+		app.run(args);
 	}
 
 	private GtkBuilder builder;
 
-	public JournalApplication(MemorySegment address) {
-		super(address);
+	public JournalApplication() {
+		setApplicationId("ca.footeware.javagi.journal");
+		setFlags(ApplicationFlags.DEFAULT_FLAGS);
 	}
 
 	@Override
@@ -44,9 +40,18 @@ public class JournalApplication extends Application {
 		var iconTheme = IconTheme.getForDisplay(display);
 		iconTheme.addResourcePath("/journal");
 
-		var win = this.getActiveWindow();
+		try {
+			byte[] bytes = JournalApplication.class.getResourceAsStream("/journal.gresource").readAllBytes();
+			var resources = Resource.fromData(bytes);
+			resources.resourcesRegister();
+		} catch (IOException | GErrorException e) {
+			e.printStackTrace();
+		}
+
+		Window win = this.getActiveWindow();
 		if (win == null) {
-			win = JournalWindow.create(this);
+			System.out.println("About to call JournalWindow constructor:\t" + System.currentTimeMillis());
+			win = new JournalWindow(this);
 		}
 		win.present();
 	}
@@ -92,7 +97,7 @@ public class JournalApplication extends Application {
  	}
  	// @formatter:on
 
-	private void onShortcutsAction(Variant variant1) {
+	private void onShortcutsAction(Variant variant) {
 		try {
 			builder.addFromResource("/journal/help_overlay.ui");
 			((Window) builder.getObject("help_overlay")).setVisible(true);

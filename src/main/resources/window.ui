@@ -145,6 +145,7 @@
                                         <property name="margin-bottom">10</property>
                                         <property name="margin-top">10</property>
                                         <property name="valign">center</property>
+                                        <style/>
                                       </object>
                                     </child>
                                   </object>
@@ -164,18 +165,19 @@
                                 <child>
                                   <object class="AdwButtonRow">
                                     <property name="action-name">win.create_journal</property>
-                                    <property name="title">Create Journal</property>
+                                    <property name="title">＋ Create Journal</property>
+                                    <style/>
                                   </object>
                                 </child>
                               </object>
                             </child>
                             <child>
                               <object class="GtkImage">
-                                <property name="height-request">100</property>
+                                <property name="hexpand">True</property>
                                 <property name="margin-top">20</property>
-                                <property name="pixel-size">75</property>
+                                <property name="pixel-size">125</property>
                                 <property name="resource">/journal/key.svg</property>
-                                <property name="valign">start</property>
+                                <property name="vexpand">True</property>
                               </object>
                             </child>
                           </object>
@@ -227,6 +229,7 @@
                                         <property name="halign">end</property>
                                         <property name="margin-bottom">10</property>
                                         <property name="margin-top">10</property>
+                                        <style/>
                                       </object>
                                     </child>
                                   </object>
@@ -241,17 +244,18 @@
                                   <object class="AdwButtonRow">
                                     <property name="action-name">win.open_journal</property>
                                     <property name="title">Open Journal</property>
+                                    <style/>
                                   </object>
                                 </child>
                               </object>
                             </child>
                             <child>
                               <object class="GtkImage">
-                                <property name="height-request">100</property>
+                                <property name="hexpand">True</property>
                                 <property name="margin-top">20</property>
-                                <property name="pixel-size">75</property>
+                                <property name="pixel-size">125</property>
                                 <property name="resource">/journal/key.svg</property>
-                                <property name="valign">start</property>
+                                <property name="vexpand">True</property>
                               </object>
                             </child>
                           </object>

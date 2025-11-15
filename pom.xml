@@ -52,13 +52,39 @@
 			        <commandlineArgs>${project.basedir}/src/main/resources/journal.gresource.xml</commandlineArgs>
 			      </configuration>
 			</plugin>
+			
+			<plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-assembly-plugin</artifactId>
+	            <version>3.7.1</version>
+	            <configuration>
+	                <archive>
+	                    <manifest>
+	                        <addClasspath>true</addClasspath>
+	                        <mainClass>ca.footeware.javagi.journal.JournalApplication</mainClass>
+	                    </manifest>
+	                </archive>
+	                <descriptorRefs>
+	                    <descriptorRef>jar-with-dependencies</descriptorRef>
+	                </descriptorRefs>
+	            </configuration>
+	            <executions>
+	                <execution>
+	                    <id>assemble-all</id>
+	                    <phase>package</phase>
+	                    <goals>
+	                        <goal>single</goal>
+	                    </goals>
+	                </execution>
+	            </executions>
+	        </plugin>
 
             <plugin>
 				<groupId>ca.footeware</groupId>
 				<artifactId>flatpak-maven-plugin</artifactId>
 				<version>1.0.4-SNAPSHOT</version>
 				<configuration>
-					<mainClass>ca.footeware.javagi.journal.Main</mainClass>
+					<mainClass>ca.footeware.javagi.journal.JournalApplication</mainClass>
 					<modules>false</modules>
 					<runtime>org.gnome.Platform</runtime>
 					<runtimeVersion>49</runtimeVersion>
@@ -87,7 +113,7 @@
         </plugins>
   	</build>
   	
-  	<name>${project.groupId}}.${project.artifactId}</name>
+  	<name>${project.groupId}.${project.artifactId}</name>
 
 	<description>An encrypted daily journal, written in Java using Java-GI bindings to the Gtk4/Adw toolkit.</description>
 
@@ -98,14 +124,14 @@
 		<!--must be included for flatpak plugin -->
 		<license>
 			<name>GPL-3.0-or-later</name>
-			<url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<url>https://spdx.org/licenses/GPL-3.0-or-later.html</url>
 			<distribution>repo</distribution>
 			<comments>project</comments>
 		</license>
 		<!--defaults to FSFAP if omitted -->
 		<license>
 			<name>FSFAP</name>
-			<url>https://spdx.org/licenses/GPL-3.0-or-later.html</url>
+			<url>https://spdx.org/licenses/FSFAP.html</url>
 			<distribution>repo</distribution>
 			<comments>metadata</comments>
 		</license>
