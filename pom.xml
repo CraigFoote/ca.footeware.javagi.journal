@@ -17,7 +17,7 @@
 		<dependency>
 		    <groupId>org.java-gi</groupId>
 		    <artifactId>adw</artifactId>
-		    <version>0.13.0-RC1</version>
+		    <version>0.13.0</version>
 		</dependency>
   	</dependencies>
   	
@@ -67,6 +67,8 @@
 	                <descriptorRefs>
 	                    <descriptorRef>jar-with-dependencies</descriptorRef>
 	                </descriptorRefs>
+	                <appendAssemblyId>false</appendAssemblyId>
+	                <finalName>${project.groupId}.${project.artifactId}-${project.version}</finalName>
 	            </configuration>
 	            <executions>
 	                <execution>

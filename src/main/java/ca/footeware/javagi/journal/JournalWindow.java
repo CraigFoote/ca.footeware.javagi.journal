@@ -416,7 +416,7 @@ public class JournalWindow extends ApplicationWindow {
 	/**
 	 * Prompts the user to save unsaved modifications to the text buffer.
 	 *
-	 * @param newDate   {@link LocalDate}
+	 * @param newDate {@link LocalDate}
 	 */
 	private void promptToSavePrevious(LocalDate newDate) {
 		AlertDialog alert = new AlertDialog("Unsaved Changes",
@@ -446,7 +446,14 @@ public class JournalWindow extends ApplicationWindow {
 				break;
 			}
 			case CANCEL: {
-				// do nothing but close dialog
+				// store displayed text
+				String text = getText();
+				// go back to date selected before the alert
+				calendar.selectDay(convert(previousDate));
+				// put the text back in the editor
+				textView.getBuffer().setText(text, text.length());
+				// simulate the state before the click that caused the alert
+				setDirtyTitle(true);
 				break;
 			}
 			default:
