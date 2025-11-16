@@ -56,6 +56,26 @@ public class JournalApplication extends Application {
 		win.present();
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj) || (getClass() != obj.getClass())) {
+			return false;
+		}
+		JournalApplication other = (JournalApplication) obj;
+		return Objects.equals(builder, other.builder);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + Objects.hash(builder);
+		return result;
+	}
+
 	@InstanceInit
 	public void init() {
 		var aboutAction = new SimpleAction("about", null);
@@ -104,28 +124,5 @@ public class JournalApplication extends Application {
 		} catch (GErrorException e) {
 			e.printStackTrace();
 		}
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + Objects.hash(builder);
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!super.equals(obj)) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		JournalApplication other = (JournalApplication) obj;
-		return Objects.equals(builder, other.builder);
 	}
 }

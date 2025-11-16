@@ -20,6 +20,7 @@ import org.gnome.gdk.Display;
 import org.gnome.gio.File;
 import org.gnome.gio.SimpleAction;
 import org.gnome.glib.DateTime;
+import org.gnome.glib.TimeZone;
 import org.gnome.gtk.Button;
 import org.gnome.gtk.Calendar;
 import org.gnome.gtk.CssProvider;
@@ -98,6 +99,11 @@ public class JournalWindow extends ApplicationWindow {
 
 	private LocalDate convert(DateTime date) {
 		return LocalDate.of(date.getYear(), date.getMonth(), date.getDayOfMonth());
+	}
+
+	private DateTime convert(LocalDate localDate) {
+		return new DateTime(TimeZone.local(), localDate.getYear(), localDate.getMonthValue(), localDate.getDayOfMonth(),
+				0, 0, 0);
 	}
 
 	private void createCalendarNavigationActions() {
@@ -186,20 +192,22 @@ public class JournalWindow extends ApplicationWindow {
 		super.addAction(openPageAction);
 	}
 
-	private void displayDateEntry(final LocalDate localDate) {
+	private void displayDateEntry(LocalDate date) {
 		if (isDirty()) {
-			promptToSave(previousDate, previousText);
-		}
-		TextBuffer buffer = textView.getBuffer();
-		if (JournalManager.hasDate(localDate)) {
-			try {
-				String entry = JournalManager.getEntry(localDate);
-				buffer.setText(entry, entry.length());
-			} catch (JournalException e) {
-				notifyUser(e.getMessage());
-			}
+			promptToSavePrevious(date);
 		} else {
-			buffer.setText("", 0);
+			TextBuffer buffer = textView.getBuffer();
+			if (JournalManager.hasDate(date)) {
+				try {
+					String entry = JournalManager.getEntry(date);
+					buffer.setText(entry, entry.length());
+				} catch (JournalException e) {
+					notifyUser(e.getMessage());
+				}
+			} else {
+				buffer.setText("", 0);
+			}
+			setDirtyTitle(false);
 		}
 	}
 
@@ -408,10 +416,9 @@ public class JournalWindow extends ApplicationWindow {
 	/**
 	 * Prompts the user to save unsaved modifications to the text buffer.
 	 *
-	 * @param localDate {@link LocalDate}
-	 * @param text      {@link String}
+	 * @param newDate   {@link LocalDate}
 	 */
-	private void promptToSave(LocalDate localDate, String text) {
+	private void promptToSavePrevious(LocalDate newDate) {
 		AlertDialog alert = new AlertDialog("Unsaved Changes",
 				"Do you want to save your edits to " + previousDate + "?");
 		alert.addResponse(DISCARD, "Discard");
@@ -424,11 +431,18 @@ public class JournalWindow extends ApplicationWindow {
 			String button = alert.chooseFinish(result);
 			switch (button) {
 			case "save": {
-				save(localDate, text);
+				// save previous date's text
+				save(previousDate, previousText);
+				// display previous date
+				calendar.selectDay(convert(previousDate));
+				setDirtyTitle(false);
 				break;
 			}
 			case DISCARD: {
-				displayDateEntry(localDate);
+				setDirtyTitle(false);
+				textView.getBuffer().setModified(false);
+				// display new date
+				displayDateEntry(newDate);
 				break;
 			}
 			case CANCEL: {
@@ -460,11 +474,7 @@ public class JournalWindow extends ApplicationWindow {
 	}
 
 	private void setDirtyTitle(boolean dirty) {
-		if (dirty) {
-			windowTitle.setTitle("• Journal");
-		} else {
-			windowTitle.setTitle("Journal");
-		}
+		windowTitle.setTitle(dirty ? "• Journal" : "Journal");
 	}
 
 	@Override
