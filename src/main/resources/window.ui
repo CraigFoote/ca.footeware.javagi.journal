@@ -275,7 +275,7 @@
                                   <object class="GtkCalendar" id="calendar">
                                     <property name="has-tooltip">True</property>
                                     <property name="hexpand">True</property>
-                                    <signal name="day-selected" handler="onDateSelected"/>
+                                    <signal name="day-selected" handler="onDateSelected" after="yes"/>
                                   </object>
                                 </child>
                               </object>

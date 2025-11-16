@@ -100,7 +100,7 @@ public class JournalWindow extends ApplicationWindow {
 		return LocalDate.of(date.getYear(), date.getMonth(), date.getDayOfMonth());
 	}
 
-	private void createCalendarNavigationButtonActions() {
+	private void createCalendarNavigationActions() {
 		// First action
 		var firstAction = new SimpleAction("first", null);
 		firstAction.onActivate(_ -> onFirstAction());
@@ -128,7 +128,7 @@ public class JournalWindow extends ApplicationWindow {
 	}
 
 	private void createEditorPageActions() {
-		createCalendarNavigationButtonActions();
+		createCalendarNavigationActions();
 
 		// Save action
 		var saveAction = new SimpleAction("save_journal", null);
@@ -187,12 +187,12 @@ public class JournalWindow extends ApplicationWindow {
 	}
 
 	private void displayDateEntry(final LocalDate localDate) {
+		if (isDirty()) {
+			promptToSave(previousDate, previousText);
+		}
 		TextBuffer buffer = textView.getBuffer();
 		if (JournalManager.hasDate(localDate)) {
 			try {
-				if (isDirty()) {
-					promptToSave(previousDate, previousText);
-				}
 				String entry = JournalManager.getEntry(localDate);
 				buffer.setText(entry, entry.length());
 			} catch (JournalException e) {
@@ -203,11 +203,31 @@ public class JournalWindow extends ApplicationWindow {
 		}
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj) || (getClass() != obj.getClass())) {
+			return false;
+		}
+		JournalWindow other = (JournalWindow) obj;
+		return Objects.equals(stack, other.stack);
+	}
+
 	private String getText() {
 		TextIter startIter = new TextIter();
 		TextIter endIter = new TextIter();
 		textView.getBuffer().getBounds(startIter, endIter);
 		return textView.getBuffer().getText(startIter, endIter, true);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + Objects.hash(stack);
+		return result;
 	}
 
 	/**
@@ -226,28 +246,25 @@ public class JournalWindow extends ApplicationWindow {
 		createNewJournalPageActions();
 		createOpenJournalPageActions();
 		createEditorPageActions();
-		createCalendarNavigationButtonActions();
+		createCalendarNavigationActions();
 
 		// configure TextView
 		textView.setWrapMode(WrapMode.WORD);
-		textView.getBuffer().onModifiedChanged(this::onModifiedChanged);
+		textView.getBuffer().onChanged(this::onBufferChanged);
 		textView.getBuffer().addCommitNotify(TextBufferNotifyFlags.BEFORE_INSERT, new TextBufferCommitNotify() {
 			@Override
 			public void run(TextBuffer buffer, Set<TextBufferNotifyFlags> flags, int position, int length) {
-				boolean datesEqual = previousDate != null && previousDate.equals(convert(calendar.getDate()));
-				if (previousDate != null && !datesEqual && buffer.getModified()
-						&& windowTitle.getTitle().startsWith("• ")) {
-					promptToSave(previousDate, previousText);
-				}
 				previousDate = convert(calendar.getDate());
 			}
 		});
 	}
 
 	/**
-	 * Determines if the text buffer contents have changed since last save,
+	 * Determines if the text buffer contents have changed since last save and also
+	 * checks that the window title is flagged as changed.
 	 *
-	 * @return boolean true if editor has unsaved edits
+	 * @return boolean true if editor has unsaved edits and the title indicates
+	 *         dirty state
 	 */
 	private boolean isDirty() {
 		return windowTitle.getTitle().startsWith("•") && textView.getBuffer().getModified();
@@ -265,6 +282,11 @@ public class JournalWindow extends ApplicationWindow {
 
 	private void notifyUser(String message) {
 		toaster.addToast(new Toast(message));
+	}
+
+	private void onBufferChanged() {
+		setDirtyTitle(true);
+		previousText = getText();
 	}
 
 	private void onCreateNewJournalAction() {
@@ -288,13 +310,9 @@ public class JournalWindow extends ApplicationWindow {
 	 */
 	@GtkCallback(name = "onDateSelected")
 	public void onDateSelected() {
-		if (isDirty()) {
-			promptToSave(previousDate, previousText);
-		} else {
-			displayDateEntry(convert(calendar.getDate()));
-		}
+		displayDateEntry(convert(calendar.getDate()));
+		setDirtyTitle(false);
 		textView.getBuffer().setModified(false);
-		setDirty(false);
 	}
 
 	/**
@@ -320,11 +338,6 @@ public class JournalWindow extends ApplicationWindow {
 
 	private void onLastAction() {
 		// TODO
-	}
-
-	private void onModifiedChanged() {
-		setDirty(textView.getBuffer().getModified());
-		previousText = getText();
 	}
 
 	/**
@@ -363,10 +376,10 @@ public class JournalWindow extends ApplicationWindow {
 				textView.grabFocus();
 				calendar.selectDay(DateTime.nowLocal());
 				displayDateEntry(LocalDate.now());
+				windowTitle.setSubtitle(file.getPath());
 				// clear above indication of change
 				textView.getBuffer().setModified(false);
-				setDirty(false);
-				windowTitle.setSubtitle(file == null ? "An encrypted daily journal" : file.getPath());
+				setDirtyTitle(false);
 			} catch (JournalException e) {
 				notifyUser(e.getMessage());
 			}
@@ -439,14 +452,14 @@ public class JournalWindow extends ApplicationWindow {
 		try {
 			JournalManager.addEntry(date, text);
 			JournalManager.saveJournal();
-			setDirty(false);
+			setDirtyTitle(false);
 			notifyUser("Journal was saved.");
 		} catch (JournalException e) {
 			notifyUser(e.getMessage());
 		}
 	}
 
-	private void setDirty(boolean dirty) {
+	private void setDirtyTitle(boolean dirty) {
 		if (dirty) {
 			windowTitle.setTitle("• Journal");
 		} else {
@@ -457,28 +470,5 @@ public class JournalWindow extends ApplicationWindow {
 	@Override
 	public String toString() {
 		return "JournalWindow [file=" + file + "]";
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + Objects.hash(stack);
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!super.equals(obj)) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		JournalWindow other = (JournalWindow) obj;
-		return Objects.equals(stack, other.stack);
 	}
 }
