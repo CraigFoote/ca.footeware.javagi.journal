@@ -57,12 +57,12 @@
 				        	<goal>exec</goal>
 				      	</goals>
 				    </execution>
-			  </executions>
-			  <configuration>
+				</executions>
+				<configuration>
 			        <executable>/usr/bin/glib-compile-resources</executable>
 			        <workingDirectory>${project.basedir}/src/main/resources/</workingDirectory>
 			        <commandlineArgs>${project.basedir}/src/main/resources/journal.gresource.xml</commandlineArgs>
-			      </configuration>
+				</configuration>
 			</plugin>
 			
 			<plugin>
@@ -80,7 +80,7 @@
 	                    <descriptorRef>jar-with-dependencies</descriptorRef>
 	                </descriptorRefs>
 	                <appendAssemblyId>false</appendAssemblyId>
-	                <finalName>${project.groupId}.${project.artifactId}-${project.version}</finalName>
+	                <finalName>${project.artifactId}-${project.version}</finalName>
 	            </configuration>
 	            <executions>
 	                <execution>
@@ -111,9 +111,9 @@
 							<sdk>org.gnome.Sdk</sdk>
 							<runtimeVersion>49</runtimeVersion>
 							<categories>Office;Utility</categories>
-							<iconPath>src/main/resources/journal-javagi.svg</iconPath>
+							<iconPath>src/main/resources/journal-appicon.svg</iconPath>
 							<splashPath>src/main/resources/journal-javagi.png</splashPath>
-							<!-- <startupWMClass>Hello World!</startupWMClass> -->
+							<startupWMClass>ca.footeware.javagi.journal</startupWMClass>
 							<manifest>
 								<appId>ca.footeware.javagi.journal</appId>
 								<sdkExtensions>
@@ -140,7 +140,7 @@
   	
   	<name>ca.footeware.javagi.journal</name>
 
-	<description>An encrypted daily journal, written in Java using Java-GI bindings to the Gtk4/Adw toolkit, and packaged as a flatpak.</description>
+	<description>An encrypted daily journal, written in Java using Java-GI bindings to the Gtk4/Adw toolkit.</description>
 
 	<url>https://github.com/CraigFoote/ca.footeware.javagi.journal</url>
 	
