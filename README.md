@@ -87,9 +87,9 @@ From the *app* folder again:
 1. `flatpak-builder --repo=repo --force-clean build-dir ca.footeware.javagi.journal.yml`
 2. `flatpak build-bundle repo ca.footeware.javagi.journal.flatpak ca.footeware.javagi.journal`
 
-The last command took over 2 minutes on my laptop (!) With no progress or debug information but it did eventually return. The build result is a 265MB flatpak file. I guess the bundles JRE and dependent jars add up 🧐.
+The last command took over 2 minutes on my laptop (!) With no progress or debug information but it did eventually return. The build result is a 265MB flatpak file. I guess the bundled JRE and dependent jars add up 🧐.
 
-This creates a subfolder of *target/app* called *build-dir* with build resources but you'll find the **ca.footeware.javagi.journal.flatpak** in the *target/app* folder*. Double-click it to open and install in GNOME Software.
+This creates a subfolder of *target/app* called *build-dir* with build resources but you'll find the **ca.footeware.javagi.journal.flatpak** in the *target/app* folder. Double-click it to open and install in GNOME Software.
 
 ## Debugging
 
