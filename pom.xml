@@ -3,8 +3,8 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
   
-	<groupId>ca.footeware</groupId>
-	<artifactId>javagi.journal</artifactId>
+	<groupId>ca.footeware.javagi</groupId>
+	<artifactId>journal</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	
 	<properties>
@@ -138,7 +138,7 @@
         </plugins>
   	</build>
   	
-  	<name>ca.footeware.javagi.journal</name>
+  	<name>Journal</name>
 
 	<description>An encrypted daily journal, written in Java using Java-GI bindings to the Gtk4/Adw toolkit.</description>
 
