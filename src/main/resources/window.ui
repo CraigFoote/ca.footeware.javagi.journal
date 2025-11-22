@@ -166,7 +166,8 @@
                                 <child>
                                   <object class="AdwButtonRow">
                                     <property name="action-name">win.create_journal</property>
-                                    <property name="title">＋ Create Journal</property>
+                                    <property name="start-icon-name">list-add-symbolic</property>
+                                    <property name="title"> Create Journal</property>
                                     <style/>
                                   </object>
                                 </child>
@@ -244,6 +245,7 @@
                                 <child>
                                   <object class="AdwButtonRow">
                                     <property name="action-name">win.open_journal</property>
+                                    <property name="start-icon-name">dialog-password-symbolic</property>
                                     <property name="title">Open Journal</property>
                                     <style/>
                                   </object>
@@ -342,8 +344,13 @@
                             <child>
                               <object class="GtkButton" id="save_button">
                                 <property name="action-name">win.save_journal</property>
+                                <property name="child">
+                                  <object class="AdwButtonContent">
+                                    <property name="icon-name">document-save-symbolic</property>
+                                    <property name="label">Save</property>
+                                  </object>
+                                </property>
                                 <property name="css-classes">suggested-action</property>
-                                <property name="label">Save</property>
                               </object>
                             </child>
                           </object>
