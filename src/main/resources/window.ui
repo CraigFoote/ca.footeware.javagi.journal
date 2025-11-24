@@ -71,7 +71,7 @@
                                     <property name="margin-bottom">50</property>
                                     <property name="margin-top">50</property>
                                     <property name="pixel-size">125</property>
-                                    <property name="resource">/journal/journal.png</property>
+                                    <property name="resource">/journal/journal.svg</property>
                                   </object>
                                 </child>
                                 <child>

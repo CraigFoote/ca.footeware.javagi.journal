@@ -3,10 +3,10 @@
 
 <svg
    xml:space="preserve"
-   width="1536"
-   height="1575.7313"
+   width="300"
+   height="294.20038"
    style="clip-rule:evenodd;fill-rule:evenodd;image-rendering:optimizeQuality;shape-rendering:geometricPrecision;text-rendering:geometricPrecision"
-   viewBox="0 0 1536 1575.7313"
+   viewBox="0 0 300 294.20037"
    version="1.1"
    id="svg2"
    sodipodi:docname="journal-javagi.svg"
@@ -24,14 +24,14 @@
    inkscape:pagecheckerboard="1"
    inkscape:deskcolor="#505050"
    inkscape:zoom="0.69237694"
-   inkscape:cx="769.81189"
-   inkscape:cy="842.74904"
+   inkscape:cx="689.65324"
+   inkscape:cy="732.98224"
    inkscape:window-width="2304"
    inkscape:window-height="1371"
    inkscape:window-x="0"
    inkscape:window-y="0"
    inkscape:window-maximized="1"
-   inkscape:current-layer="row3"
+   inkscape:current-layer="g1"
    showgrid="false" />
  <defs
    id="defs1">
@@ -54,11 +54,11 @@
    
    
   <filter
-   style="color-interpolation-filters:sRGB;"
+   style="color-interpolation-filters:sRGB"
    inkscape:label="Drop Shadow"
    id="filter2"
    x="-0.125"
-   y="-0.056031128"
+   y="-0.056031127"
    width="1.3541667"
    height="1.1587549"><feFlood
      result="flood"
@@ -134,7 +134,7 @@
      id="feComposite8" /></filter></defs>
  <g
    id="g1"
-   transform="matrix(0.89938796,0,0,0.85976169,80.880799,109.7668)"><g
+   transform="scale(0.1953125,0.1867072)"><g
      id="g6"><rect
        style="clip-rule:evenodd;display:inline;fill:#cdab8f;fill-rule:evenodd;stroke-width:1.46768;image-rendering:optimizeQuality;shape-rendering:geometricPrecision;text-rendering:geometricPrecision"
        id="rect3"
