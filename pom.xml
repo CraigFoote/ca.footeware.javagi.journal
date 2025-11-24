@@ -116,16 +116,35 @@
 							<startupWMClass>ca.footeware.javagi.journal</startupWMClass>
 							<screenshots>
 								<screenshot>
-									<imageUrl>https://github.com/CraigFoote/ca.footeware.javagi.journal/blob/master/src/main/resources/screenshots/screenshot1.png</imageUrl>
+									<image>
+										<type>source</type>
+										<value>https://raw.githubusercontent.com/CraigFoote/ca.footeware.javagi.journal/refs/heads/master/src/main/resources/screenshots/screenshot1.png</value>
+									</image>
 									<caption>Journal editor window</caption>
-									<isDefault>true</isDefault>
+									<type>default</type>
 								</screenshot>
 								<screenshot>
-									<imageUrl>https://github.com/CraigFoote/ca.footeware.javagi.journal/blob/master/src/main/resources/screenshots/screenshot2.png</imageUrl>
+									<image>
+										<type>source</type>
+										<value>https://raw.githubusercontent.com/CraigFoote/ca.footeware.javagi.journal/refs/heads/master/src/main/resources/screenshots/screenshot2.png</value>
+									</image>
 									<caption>Journal initial page</caption>
-									<isDefault>false</isDefault>
 								</screenshot>
 							</screenshots>
+							<branding>
+								<colors>
+									<color>
+										<type>primary</type>
+										<schemePreference>light</schemePreference>
+										<value>#d8dee9</value>
+									</color>
+									<color>
+										<type>primary</type>
+										<schemePreference>dark</schemePreference>
+										<value>#4c566a</value>
+									</color>
+								</colors>
+							</branding>
 							<vmArgs>
 								<vmArg>--enable-native-access=ALL-UNNAMED</vmArg>
 							</vmArgs>
