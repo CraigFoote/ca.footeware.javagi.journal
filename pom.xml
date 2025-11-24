@@ -116,9 +116,14 @@
 							<startupWMClass>ca.footeware.javagi.journal</startupWMClass>
 							<screenshots>
 								<screenshot>
-									<imageUrl>https://github.com/CraigFoote/ca.footeware.javagi.journal/blob/master/src/main/resources/screenshot1.png?raw=true</imageUrl>
+									<imageUrl>https://github.com/CraigFoote/ca.footeware.javagi.journal/blob/master/src/main/resources/screenshots/screenshot1.png</imageUrl>
 									<caption>Journal editor window</caption>
 									<isDefault>true</isDefault>
+								</screenshot>
+								<screenshot>
+									<imageUrl>https://github.com/CraigFoote/ca.footeware.javagi.journal/blob/master/src/main/resources/screenshots/screenshot2.png</imageUrl>
+									<caption>Journal initial page</caption>
+									<isDefault>false</isDefault>
 								</screenshot>
 							</screenshots>
 							<vmArgs>
