@@ -117,6 +117,10 @@
 									</color>
 								</colors>
 							</branding>
+							<!--https://hughsie.github.io/oars/generate.html-->
+							<contentRating>
+								<type>oars-1.1</type>
+							</contentRating>
 							<vmArgs>
 								<vmArg>--enable-native-access=ALL-UNNAMED</vmArg>
 							</vmArgs>

@@ -2,11 +2,11 @@
 
 ### An encrypted daily journal for flatpak.
 
-Written in Java using [Java-GI](https://https://java-gi.org/) Gtk/Adw bindings, version 0.13.0, and packaged as a flatpak. It uses a modified [fork](https://github.com/CraigFoote/flatpak-maven-plugin) of the [uk.co.bithatch:maven-flatpak-plugin](https://github.com/bithatch/maven-flatpak-plugin) to create flatpak artifacts. Have a look at this project's `pom.xml` configuration for details.
+Written in Java using [Java-GI](https://https://java-gi.org/) Gtk/Adw bindings, version 0.13.0, and packaged as a flatpak. It uses the [flatpak-maven-plugin](https://github.com/CraigFoote/flatpak-maven-plugin) to create flatpak artifacts. Have a look at this project's `pom.xml` configuration for details.
 
 The code is compiled with Java 25 (the minimum for Java-GI is 22) and is packaged in a flatpak container with runtimes *org.gnome.Platform* 49, *org.gnome.Sdk* 49, and *org.freedesktop.Sdk.Extension.openjdk25* that includes the openjdk-25 JRE that runs the Journal application.
 
-The encryption-by-password algorithm should provide privacy (unless you have this code 🤔). The files used can be named anything and is just a plain text Java Properties file, e.g.:
+The encryption-by-password algorithm should provide privacy. The files used can be named anything and is just a plain text Java Properties file, e.g.:
 
 ```properties
 #Wed Nov 05 15:24:00 EST 2025
@@ -14,7 +14,7 @@ The encryption-by-password algorithm should provide privacy (unless you have thi
 2025-09-24=JblFzDbfBE5DyGKjyBQ4PPCFOePILMaWYevYH2TF9o4+bxAATFdYgUnhAEpBfsCdCA\=\=
 ```
 
-As you can see, the keys are the entry dates and the entries are encrypted text.
+As you can see, the keys are the entry dates and the entries are encrypted text. Journal decrypts the contents for display when the entry date is clicked in its calendar.
 
 ## Prerequisites
 
@@ -46,14 +46,16 @@ This populates the *target* folder, including an *app* folder with artifacts nee
 
 ```bash
 ❯ tree ./app
-./app
+app/
 ├── ca.footeware.javagi.journal.desktop
 ├── ca.footeware.javagi.journal.metainfo.xml
 ├── ca.footeware.javagi.journal.png
 ├── ca.footeware.javagi.journal.svg
 ├── ca.footeware.javagi.journal.yml
 ├── journal
-└── journal-0.0.1-SNAPSHOT.jar
+├── journal-0.0.1-SNAPSHOT.jar
+├── screenshot1.png
+└── screenshot2.png
 ```
 
 The jar is a regular Java jar without embedded dependencies but we're building it into a flatpak installer that does contain the dependencies. From the *app* folder, run the following to build the flatpak and install it locally.
@@ -87,7 +89,7 @@ From the *app* folder again:
 1. `flatpak-builder --repo=repo --force-clean build-dir ca.footeware.javagi.journal.yml`
 2. `flatpak build-bundle repo ca.footeware.javagi.journal.flatpak ca.footeware.javagi.journal`
 
-The last command took over 2 minutes on my laptop (!) With no progress or debug information but it did eventually return. The build result is a 265MB flatpak file. I guess the bundled JRE and dependent jars add up 🧐.
+The last command took over 2 minutes on my laptop (!) With no progress or debug information but it did eventually return. The build result is a 60MB flatpak file that installs to 256MB. I guess the bundled JRE and dependent jars add up 🧐.
 
 This creates a subfolder of *target/app* called *build-dir* with build resources but you'll find the **ca.footeware.javagi.journal.flatpak** in the *target/app* folder. Double-click it to open and install in GNOME Software.
 
