@@ -64,34 +64,6 @@
 			        <commandlineArgs>${project.basedir}/src/main/resources/journal.gresource.xml</commandlineArgs>
 				</configuration>
 			</plugin>
-			
-<!--			<plugin>-->
-<!--	            <groupId>org.apache.maven.plugins</groupId>-->
-<!--	            <artifactId>maven-assembly-plugin</artifactId>-->
-<!--	            <version>3.7.1</version>-->
-<!--	            <configuration>-->
-<!--	                <archive>-->
-<!--	                    <manifest>-->
-<!--	                        <addClasspath>true</addClasspath>-->
-<!--	                        <mainClass>ca.footeware.javagi.journal.JournalApplication</mainClass>-->
-<!--	                    </manifest>-->
-<!--	                </archive>-->
-<!--	                <descriptorRefs>-->
-<!--	                    <descriptorRef>jar-with-dependencies</descriptorRef>-->
-<!--	                </descriptorRefs>-->
-<!--	                <appendAssemblyId>false</appendAssemblyId>-->
-<!--	                <finalName>${project.artifactId}-${project.version}</finalName>-->
-<!--	            </configuration>-->
-<!--	            <executions>-->
-<!--	                <execution>-->
-<!--	                    <id>assemble-all</id>-->
-<!--	                    <phase>package</phase>-->
-<!--	                    <goals>-->
-<!--	                        <goal>single</goal>-->
-<!--	                    </goals>-->
-<!--	                </execution>-->
-<!--	            </executions>-->
-<!--	        </plugin>-->
 
             <plugin>
 				<groupId>ca.footeware</groupId>
@@ -225,4 +197,8 @@
 			<timezone>America/Toronto</timezone> <!--optional-->
 		</developer>
 	</developers>
+	<issueManagement>
+	  <url>https://github.com/CraigFoote/ca.footeware.javagi.journal/issues</url>
+	  <system>Github</system>
+	</issueManagement>
 </project>
