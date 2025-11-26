@@ -124,6 +124,13 @@
 							<vmArgs>
 								<vmArg>--enable-native-access=ALL-UNNAMED</vmArg>
 							</vmArgs>
+							<releases>
+								<release>
+									<version>1.0.0</version>
+								 	<date>2025-12-01</date>
+									<description>Initial release</description>
+								</release>
+							</releases>
 							<manifest>
 								<appId>ca.footeware.javagi.journal</appId>
 								<sdkExtensions>
