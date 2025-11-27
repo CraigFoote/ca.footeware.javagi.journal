@@ -1,3 +1,4 @@
+
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -92,7 +93,7 @@
 										<type>source</type>
 										<value>https://raw.githubusercontent.com/CraigFoote/ca.footeware.javagi.journal/refs/heads/master/src/main/resources/screenshots/screenshot1.png</value>
 									</image>
-									<caption>Journal editor window</caption>
+									<caption>Journal initial page</caption>
 									<type>default</type>
 								</screenshot>
 								<screenshot>
@@ -100,7 +101,21 @@
 										<type>source</type>
 										<value>https://raw.githubusercontent.com/CraigFoote/ca.footeware.javagi.journal/refs/heads/master/src/main/resources/screenshots/screenshot2.png</value>
 									</image>
-									<caption>Journal initial page</caption>
+									<caption>Create a new journal page</caption>
+								</screenshot>
+								<screenshot>
+									<image>
+										<type>source</type>
+										<value>https://raw.githubusercontent.com/CraigFoote/ca.footeware.javagi.journal/refs/heads/master/src/main/resources/screenshots/screenshot3.png</value>
+									</image>
+									<caption>Open a journal page</caption>
+								</screenshot>
+								<screenshot>
+									<image>
+										<type>source</type>
+										<value>https://raw.githubusercontent.com/CraigFoote/ca.footeware.javagi.journal/refs/heads/master/src/main/resources/screenshots/screenshot4.png</value>
+									</image>
+									<caption>Journal editor page</caption>
 								</screenshot>
 							</screenshots>
 							<branding>
@@ -128,7 +143,7 @@
 								<release>
 									<version>1.0.0</version>
 								 	<date>2025-12-01</date>
-									<description>Initial release</description>
+									<description><![CDATA[<p>Initial release</p>]]></description>
 								</release>
 							</releases>
 							<manifest>

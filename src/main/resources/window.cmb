@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <!DOCTYPE cambalache-project SYSTEM "cambalache-project.dtd">
-<!-- Created with Cambalache 0.96.1 -->
+<!-- Created with Cambalache 0.96.3 -->
 <cambalache-project version="0.96.0" target_tk="gtk-4.0">
-  <ui template-class="JournalWindow" filename="window.ui" sha256="9c9ac2ac04b9648be82ed2d23195c47253cb2bb6c7a2ea96a680d60a9c945896"/>
+  <ui template-class="JournalWindow" filename="window.ui" sha256="f7339bef3238276adc4296ab0b5960371ec4704f7dd6e2ee8a1f65477a4eab2f"/>
 </cambalache-project>
