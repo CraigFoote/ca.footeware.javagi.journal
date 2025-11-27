@@ -97,6 +97,13 @@ public class JournalWindow extends ApplicationWindow {
 		present();
 	}
 
+	private void attachToYearAndMonthButtons() {
+		calendar.onNextMonth(() -> onDateSelected());
+		calendar.onPrevMonth(() -> onDateSelected());
+		calendar.onNextYear(() -> onDateSelected());
+		calendar.onPrevYear(() -> onDateSelected());
+	}
+
 	private LocalDate convert(DateTime date) {
 		return LocalDate.of(date.getYear(), date.getMonth(), date.getDayOfMonth());
 	}
@@ -135,6 +142,7 @@ public class JournalWindow extends ApplicationWindow {
 
 	private void createEditorPageActions() {
 		createCalendarNavigationActions();
+		attachToYearAndMonthButtons();
 
 		// Save action
 		var saveAction = new SimpleAction("save_journal", null);
@@ -172,6 +180,8 @@ public class JournalWindow extends ApplicationWindow {
 		backAction.onActivate(_ -> {
 			backButton.setVisible(false);
 			stack.setVisibleChildName("home-page");
+			// don't give other pages access to selected file
+			file = null;
 		});
 		super.addAction(backAction);
 
@@ -279,10 +289,11 @@ public class JournalWindow extends ApplicationWindow {
 	}
 
 	private void markEntryDays() {
+		calendar.clearMarks();
 		List<LocalDate> entryDates = JournalManager.getEntryDates();
-		LocalDate now = LocalDate.now();
+		LocalDate date = convert(calendar.getDate());
 		for (LocalDate localDate : entryDates) {
-			if (localDate.getYear() == now.getYear() && localDate.getMonth() == now.getMonth()) {
+			if (localDate.getYear() == date.getYear() && localDate.getMonth() == date.getMonth()) {
 				calendar.markDay(localDate.getDayOfMonth());
 			}
 		}
@@ -318,6 +329,7 @@ public class JournalWindow extends ApplicationWindow {
 	 */
 	@GtkCallback(name = "onDateSelected")
 	public void onDateSelected() {
+		markEntryDays();
 		displayDateEntry(convert(calendar.getDate()));
 		setDirtyTitle(false);
 		textView.getBuffer().setModified(false);

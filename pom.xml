@@ -172,7 +172,7 @@
   	
   	<name>Journal</name>
 
-	<description>An encrypted daily journal, written in Java using Java-GI bindings to the Gtk4/Adw toolkit.</description>
+	<description>An encrypted daily journal</description>
 
 	<url>https://github.com/CraigFoote/ca.footeware.javagi.journal</url>
 	
