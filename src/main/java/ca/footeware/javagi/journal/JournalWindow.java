@@ -98,10 +98,10 @@ public class JournalWindow extends ApplicationWindow {
 	}
 
 	private void attachToYearAndMonthButtons() {
-		calendar.onNextMonth(() -> onDateSelected());
-		calendar.onPrevMonth(() -> onDateSelected());
-		calendar.onNextYear(() -> onDateSelected());
-		calendar.onPrevYear(() -> onDateSelected());
+		calendar.onNextMonth(this::onDateSelected);
+		calendar.onPrevMonth(this::onDateSelected);
+		calendar.onNextYear(this::onDateSelected);
+		calendar.onPrevYear(this::onDateSelected);
 	}
 
 	private LocalDate convert(DateTime date) {
