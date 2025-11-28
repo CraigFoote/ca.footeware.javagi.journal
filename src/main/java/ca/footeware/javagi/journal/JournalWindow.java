@@ -353,11 +353,13 @@ public class JournalWindow extends ApplicationWindow {
 	}
 
 	private void onFirstAction() {
-		// TODO
+		DateTime dateTime = convert(JournalManager.getFirstEntryDate());
+		calendar.selectDay(dateTime);
 	}
 
 	private void onLastAction() {
-		// TODO
+		DateTime dateTime = convert(JournalManager.getLastEntryDate());
+		calendar.selectDay(dateTime);
 	}
 
 	/**
@@ -378,7 +380,9 @@ public class JournalWindow extends ApplicationWindow {
 	}
 
 	private void onNextAction() {
-		// TODO
+		DateTime dateTime = calendar.getDate();
+		LocalDate nextEntryDate = JournalManager.getNextEntryDate(convert(dateTime));
+		calendar.selectDay(convert(nextEntryDate));
 	}
 
 	/**
@@ -407,7 +411,9 @@ public class JournalWindow extends ApplicationWindow {
 	}
 
 	private void onPreviousAction() {
-		// TODO
+		DateTime dateTime = calendar.getDate();
+		LocalDate nextEntryDate = JournalManager.getPreviousEntryDate(convert(dateTime));
+		calendar.selectDay(convert(nextEntryDate));
 	}
 
 	/**
