@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="ca.footeware.javagi.journal" path="/ca/footeware/javagi/journal/">
+    <key name="window-height" type="i">
+      <default>800</default>
+      <summary>Window height</summary>
+      <description>The window height in pixels.</description>
+    </key>
+    <key name="window-width" type="i">
+      <default>600</default>
+      <summary>Window width</summary>
+      <description>The window width in pixels.</description>
+    </key>
+  </schema>
+</schemalist>

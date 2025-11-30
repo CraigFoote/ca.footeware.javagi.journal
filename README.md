@@ -46,16 +46,18 @@ This populates the *target* folder, including an *app* folder with artifacts nee
 
 ```bash
 ❯ tree ./app
-app/
+app
 ├── ca.footeware.javagi.journal.desktop
+├── ca.footeware.javagi.journal.gschema.xml
 ├── ca.footeware.javagi.journal.metainfo.xml
-├── ca.footeware.javagi.journal.png
 ├── ca.footeware.javagi.journal.svg
 ├── ca.footeware.javagi.journal.yml
 ├── journal
 ├── journal-0.0.1-SNAPSHOT.jar
 ├── screenshot1.png
-└── screenshot2.png
+├── screenshot2.png
+├── screenshot3.png
+└── screenshot4.png
 ```
 
 The jar is a regular Java jar without embedded dependencies but we're building it into a flatpak installer that does contain the dependencies. From the *app* folder, run the following to build the flatpak and install it locally.
@@ -69,7 +71,12 @@ If you get errors, running this can provide better explanations. Some *pom.xml* 
 ```
 flatpak run --command=flatpak-builder-lint org.flatpak.Builder appstream ca.footeware.javagi.journal.metainfo.xml
 ```
+*NOTE* When the flatpak is built, the gschema file is copied to `/app/share/glib-2.0/schemas/` and `glib-compile-schemas` is run, making the schema available. If you want to run the Journal application before building a flatpak, there is an eclipse `javagi.journal-RUN.launch` configuration for that. But you need to copy the gschema to `/usr/share/glib-2.0/schemas/` and run `glib-compile-schemas` there, i.e. from `/src/main/resources`:
 
+```
+sudo cp ./ca.footeware.javagi.journal.gschema.xml /usr/share/glib-2.0/schemas/
+sudo glib-compile-schemas /usr/share/glib-2.0/schemas/
+```
 ## Running
 
 To run the installed flatpak, use:

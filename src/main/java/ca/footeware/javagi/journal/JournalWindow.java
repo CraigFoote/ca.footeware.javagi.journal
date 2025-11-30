@@ -17,7 +17,9 @@ import org.gnome.adw.ToastOverlay;
 import org.gnome.adw.ViewStack;
 import org.gnome.adw.WindowTitle;
 import org.gnome.gdk.Display;
+import org.gnome.gio.Cancellable;
 import org.gnome.gio.File;
+import org.gnome.gio.Settings;
 import org.gnome.gio.SimpleAction;
 import org.gnome.glib.DateTime;
 import org.gnome.glib.TimeZone;
@@ -43,6 +45,54 @@ import ca.footeware.javagi.journal.model.JournalManager;
 
 @GtkTemplate(name = "JournalWindow", ui = "/journal/window.ui")
 public class JournalWindow extends ApplicationWindow {
+
+	/**
+	 * Handles user closing the window by chacking if editor is dirty and prompting
+	 * user to save.
+	 */
+	private class CloseRequestHandler implements CloseRequestCallback {
+		@Override
+		public boolean run() {
+			settings.setInt("window-width", JournalWindow.this.getWidth());
+			settings.setInt("window-height", JournalWindow.this.getHeight());
+			if (isDirty()) {
+				AlertDialog alert = new AlertDialog("Unsaved Changes",
+						"Do you want to save your edits to " + previousDate + "?");
+				alert.addResponse(DISCARD, "Discard");
+				alert.addResponse(SAVE, "Save");
+				alert.addResponse(CANCEL, "Cancel");
+				alert.setCloseResponse(CANCEL);
+				alert.setResponseAppearance(SAVE, ResponseAppearance.SUGGESTED);
+				alert.setResponseAppearance(DISCARD, ResponseAppearance.DESTRUCTIVE);
+				alert.setDefaultResponse(SAVE);
+				Cancellable cancellable = new Cancellable();
+				alert.choose(JournalWindow.this, cancellable, (_, result, _) -> {
+					String button = alert.chooseFinish(result);
+					switch (button) {
+					case "save": {
+						// save previous date's text & close window
+						save(convert(calendar.getDate()), getText());
+						break;
+					}
+					case DISCARD: {
+						// do nothing, close window
+						setDirtyTitle(false);
+						JournalWindow.this.close();
+					}
+					case CANCEL: {
+						// do nothing, keep window open
+						cancellable.cancel();
+						break;
+					}
+					default:
+						throw new IllegalArgumentException("Unexpected value: " + button);
+					}
+				});
+				return true; // keep window open until user decides
+			}
+			return false; // go ahead and close window
+		}
+	}
 
 	private static final String CANCEL = "cancel";
 	private static final String DISCARD = "discard";
@@ -74,6 +124,8 @@ public class JournalWindow extends ApplicationWindow {
 	private LocalDate previousDate = null;
 
 	private String previousText = null;
+
+	private Settings settings;
 
 	@GtkChild(name = "stack")
 	public ViewStack stack;
@@ -253,6 +305,11 @@ public class JournalWindow extends ApplicationWindow {
 	 */
 	@InstanceInit
 	public void init() {
+		settings = new Settings("ca.footeware.javagi.journal");
+		int width = settings.getInt("window-width");
+		int height = settings.getInt("window-height");
+		this.setDefaultSize(width, height);
+
 		// css
 		CssProvider cssProvider = new CssProvider();
 		cssProvider.loadFromResource("/journal/styles.css");
@@ -275,6 +332,8 @@ public class JournalWindow extends ApplicationWindow {
 				previousDate = convert(calendar.getDate());
 			}
 		});
+
+		this.onCloseRequest(new CloseRequestHandler());
 	}
 
 	/**
@@ -441,6 +500,7 @@ public class JournalWindow extends ApplicationWindow {
 				"Do you want to save your edits to " + previousDate + "?");
 		alert.addResponse(DISCARD, "Discard");
 		alert.addResponse(SAVE, "Save");
+		alert.addResponse(CANCEL, "Cancel");
 		alert.setCloseResponse(CANCEL);
 		alert.setResponseAppearance(SAVE, ResponseAppearance.SUGGESTED);
 		alert.setResponseAppearance(DISCARD, ResponseAppearance.DESTRUCTIVE);

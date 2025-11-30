@@ -20,9 +20,17 @@ import org.javagi.base.GErrorException;
 import org.javagi.gobject.annotations.InstanceInit;
 import org.javagi.gobject.annotations.RegisteredType;
 
+/**
+ * The window-controlling application.
+ */
 @RegisteredType(name = "JournalApplication")
 public class JournalApplication extends Application {
 
+	/**
+	 * Application entry point.
+	 *
+	 * @param args {@link String}[]
+	 */
 	public static void main(String[] args) {
 		var app = new JournalApplication();
 		app.run(args);

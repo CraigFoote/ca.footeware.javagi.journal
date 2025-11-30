@@ -3,7 +3,7 @@
   <gresource prefix="journal">
     <file preprocess="xml-stripblanks">window.ui</file>
     <file preprocess="xml-stripblanks">help_overlay.ui</file>
-    <file preprocess="xml-stripblanks" alias="journal.svg">journal-javagi.svg</file>
+    <file preprocess="xml-stripblanks">journal.svg</file>
     <file preprocess="xml-stripblanks">key.svg</file>
     <file>styles.css</file>
   </gresource>
