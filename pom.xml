@@ -180,9 +180,7 @@
 
 	<name>Journal</name>
 
-	<description>An encrypted daily journal. Password-encrypted and navigable
-		via a built-in calendar. It uses a local text file in properties
-		format where the keys are dates and the values are encrypted.</description>
+	<description>An encrypted daily journal. Password-encrypted and navigable via a built-in calendar. It uses a local text file in properties format where the keys are dates and the values are encrypted.</description>
 
 	<url>https://github.com/CraigFoote/ca.footeware.javagi.journal</url>
 
