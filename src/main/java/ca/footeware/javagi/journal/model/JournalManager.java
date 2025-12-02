@@ -60,8 +60,7 @@ public class JournalManager {
 	 * Creates a new journal at the specified path with the specified name and
 	 * password.
 	 *
-	 * @param path     {@link String}
-	 * @param name     {@link String}
+	 * @param pathName {@link String}
 	 * @param password {@link String}
 	 * @throws IOException
 	 */
@@ -170,7 +169,8 @@ public class JournalManager {
 				LocalDate entryDate1 = entryDates.get(i);
 				if (selectedDate.isBefore(entryDate1)) {
 					return entryDate1;
-				} else if ((i + 1) < entryDates.size()) {
+				}
+				if ((i + 1) < entryDates.size()) {
 					LocalDate entryDate2 = entryDates.get(i + 1);
 					if (entryDate1.isBefore(selectedDate) && entryDate2.isAfter(selectedDate)) {
 						return entryDate2; // next entry
@@ -210,7 +210,8 @@ public class JournalManager {
 				LocalDate entryDate1 = entryDates.get(i);
 				if (selectedDate.isAfter(entryDate1)) {
 					return entryDate1;
-				} else if ((i - 1) >= 0) {
+				}
+				if ((i - 1) >= 0) {
 					LocalDate entryDate2 = entryDates.get(i - 1);
 					if (selectedDate.isAfter(entryDate2)
 							|| (entryDate2.isBefore(selectedDate) && entryDate1.isAfter(selectedDate))) {

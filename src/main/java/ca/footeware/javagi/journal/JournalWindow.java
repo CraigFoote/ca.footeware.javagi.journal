@@ -78,6 +78,7 @@ public class JournalWindow extends ApplicationWindow {
 						// do nothing, close window
 						setDirtyTitle(false);
 						JournalWindow.this.close();
+						break;
 					}
 					case CANCEL: {
 						// do nothing, keep window open
