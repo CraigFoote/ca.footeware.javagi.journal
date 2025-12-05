@@ -159,23 +159,9 @@ public class JournalManager {
 			return entryDates.get(0).isAfter(selectedDate) ? entryDates.get(0) : selectedDate;
 		}
 		default -> {
-			/*
-			 * Parse over entryDates. If selectedDate is before the first entryDate, return
-			 * the entryDate. Else if there's a following entryDate, and the selectedDate is
-			 * either equal to that second entryDate, or between the two entryDates, return
-			 * the second entryDate.
-			 */
-			for (int i = 0; i < entryDates.size(); i++) {
-				LocalDate entryDate1 = entryDates.get(i);
-				if (selectedDate.isBefore(entryDate1)) {
-					return entryDate1;
-				}
-				if ((i + 1) < entryDates.size()) {
-					LocalDate entryDate2 = entryDates.get(i + 1);
-					if (entryDate1.isBefore(selectedDate) && entryDate2.isAfter(selectedDate)) {
-						return entryDate2; // next entry
-					}
-				}
+			LocalDate nextDate = parseForNext(selectedDate, entryDates);
+			if (nextDate != null) {
+				return nextDate;
 			}
 		}
 		}
@@ -200,24 +186,9 @@ public class JournalManager {
 			return entryDates.get(0).isBefore(selectedDate) ? entryDates.get(0) : selectedDate;
 		}
 		default -> {
-			/*
-			 * Parse over entryDates backwards. If selectedDate is after the last entryDate,
-			 * return the entryDate. Else, if there's a following (prior) entryDate, and the
-			 * selectedDate is after that second entryDate, or between the two entryDates,
-			 * return the first entryDate.
-			 */
-			for (int i = entryDates.size() - 1; i >= 0; i--) {
-				LocalDate entryDate1 = entryDates.get(i);
-				if (selectedDate.isAfter(entryDate1)) {
-					return entryDate1;
-				}
-				if ((i - 1) >= 0) {
-					LocalDate entryDate2 = entryDates.get(i - 1);
-					if (selectedDate.isAfter(entryDate2)
-							|| (entryDate2.isBefore(selectedDate) && entryDate1.isAfter(selectedDate))) {
-						return entryDate2; // previous entry
-					}
-				}
+			LocalDate previousDate = parseForPrevious(selectedDate, entryDates);
+			if (previousDate != null) {
+				return previousDate;
 			}
 		}
 		}
@@ -271,6 +242,59 @@ public class JournalManager {
 		if (!journal.testPassword()) {
 			throw new JournalException("Incorrect password.");
 		}
+	}
+
+	/**
+	 * Parse over entryDates. If selectedDate is before the first entryDate, return
+	 * the entryDate. Else if there's a following entryDate, and the selectedDate is
+	 * either equal to that second entryDate, or between the two entryDates, return
+	 * the second entryDate.
+	 *
+	 * @param selectedDate {@link LocalDate}
+	 * @param entryDates   {@link List} of {@link LocalDate}
+	 * @return {@link LocalDate} may be null
+	 */
+	private static LocalDate parseForNext(LocalDate selectedDate, List<LocalDate> entryDates) {
+		for (int i = 0; i < entryDates.size(); i++) {
+			LocalDate entryDate1 = entryDates.get(i);
+			if (selectedDate.isBefore(entryDate1)) {
+				return entryDate1;
+			}
+			if ((i + 1) < entryDates.size()) {
+				LocalDate entryDate2 = entryDates.get(i + 1);
+				if (entryDate1.isBefore(selectedDate) && entryDate2.isAfter(selectedDate)) {
+					return entryDate2; // next entry
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Parse over entryDates backwards. If selectedDate is after the last entryDate,
+	 * return the entryDate. Else, if there's a following (prior) entryDate, and the
+	 * selectedDate is after that second entryDate, or between the two entryDates,
+	 * return the first entryDate.
+	 *
+	 * @param selectedDate {@link LocalDate}
+	 * @param entryDates   {@link List} of {@link LocalDate}
+	 * @return {@link LocalDate} may be null
+	 */
+	private static LocalDate parseForPrevious(LocalDate selectedDate, List<LocalDate> entryDates) {
+		for (int i = entryDates.size() - 1; i >= 0; i--) {
+			LocalDate entryDate1 = entryDates.get(i);
+			if (selectedDate.isAfter(entryDate1)) {
+				return entryDate1;
+			}
+			if ((i - 1) >= 0) {
+				LocalDate entryDate2 = entryDates.get(i - 1);
+				if (selectedDate.isAfter(entryDate2)
+						|| (entryDate2.isBefore(selectedDate) && entryDate1.isAfter(selectedDate))) {
+					return entryDate2; // previous entry
+				}
+			}
+		}
+		return null;
 	}
 
 	/**

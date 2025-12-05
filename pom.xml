@@ -5,7 +5,7 @@
 
 	<groupId>ca.footeware.javagi</groupId>
 	<artifactId>journal</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.1.0-SNAPSHOT</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -72,13 +72,15 @@
 			<plugin>
 				<groupId>ca.footeware</groupId>
 				<artifactId>flatpak-maven-plugin</artifactId>
-				<version>1.1.0-SNAPSHOT</version>
+				<version>1.2.0-SNAPSHOT</version>
 				<executions>
 					<execution>
 						<id>prepare</id>
 						<phase>package</phase>
 						<goals>
 							<goal>prepare-build</goal>
+							<goal>build-repo</goal>
+							<goal>export-flatpak</goal>
 						</goals>
 						<configuration>
 							<mainClass>ca.footeware.javagi.journal.JournalApplication</mainClass>
@@ -156,6 +158,16 @@
 									</ul>
 									]]></description>
 								</release>
+								<release>
+									<version>1.1.0</version>
+									<date>2025-12-05</date>
+									<description><![CDATA[
+									<p>Built using <code>flatpak-maven-plugin</code>'s three goals</p>
+									<ul>
+										<li>Ran the complete build using the above plugin rather than its first goal and then CLI invocations.</li>
+									</ul>
+									]]></description>
+								</release>
 							</releases>
 							<manifest>
 								<appId>ca.footeware.javagi.journal</appId>
@@ -176,15 +188,6 @@
 							</manifest>
 						</configuration>
 					</execution>
-					<!--build the flatpak repository-->
-                    <execution>
-                        <id>build</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>build-repo</goal>
-                        </goals>
-                        <!--default configuration-->
-                    </execution>
 				</executions>
 			</plugin>
 		</plugins>
