@@ -14,7 +14,7 @@ The encryption-by-password algorithm should provide privacy. The files used can 
 2025-09-24=JblFzDbfBE5DyGKjyBQ4PPCFOePILMaWYevYH2TF9o4+bxAATFdYgUnhAEpBfsCdCA\=\=
 ```
 
-As you can see, the keys are the entry dates and the entries are encrypted text. Journal decrypts the contents for display when the entry date is clicked in its calendar. Entered entries are encrypted and saved to file with that date as key. Clearing the text of an entry and saving removes that file entry.
+As you can see, the keys are the entry dates and the entries are encrypted text. Journal decrypts the contents for display when the entry date is clicked in its calendar. Entered entries are encrypted and saved to file with that date as key. Clearing the text of an entry and saving removes that date entry.
 
 ## Prerequisites
 
