@@ -43,528 +43,531 @@ import org.javagi.gtk.annotations.GtkTemplate;
 import ca.footeware.javagi.journal.model.JournalException;
 import ca.footeware.javagi.journal.model.JournalManager;
 
+/**
+ * The thing you look at.
+ */
 @GtkTemplate(name = "JournalWindow", ui = "/journal/window.ui")
 public class JournalWindow extends ApplicationWindow {
 
-	/**
-	 * Handles user closing the window by chacking if editor is dirty and prompting
-	 * user to save.
-	 */
-	private class CloseRequestHandler implements CloseRequestCallback {
-		@Override
-		public boolean run() {
-			settings.setInt("window-width", JournalWindow.this.getWidth());
-			settings.setInt("window-height", JournalWindow.this.getHeight());
-			if (isDirty()) {
-				AlertDialog alert = new AlertDialog("Unsaved Changes",
-						"Do you want to save your edits to " + previousDate + "?");
-				alert.addResponse(DISCARD, "Discard");
-				alert.addResponse(SAVE, "Save");
-				alert.addResponse(CANCEL, "Cancel");
-				alert.setCloseResponse(CANCEL);
-				alert.setResponseAppearance(SAVE, ResponseAppearance.SUGGESTED);
-				alert.setResponseAppearance(DISCARD, ResponseAppearance.DESTRUCTIVE);
-				alert.setDefaultResponse(SAVE);
-				Cancellable cancellable = new Cancellable();
-				alert.choose(JournalWindow.this, cancellable, (_, result, _) -> {
-					String button = alert.chooseFinish(result);
-					switch (button) {
-					case "save": {
-						// save previous date's text & close window
-						save(convert(calendar.getDate()), getText());
-						break;
-					}
-					case DISCARD: {
-						// do nothing, close window
-						setDirtyTitle(false);
-						JournalWindow.this.close();
-						break;
-					}
-					case CANCEL: {
-						// do nothing, keep window open
-						cancellable.cancel();
-						break;
-					}
-					default:
-						throw new IllegalArgumentException("Unexpected value: " + button);
-					}
-				});
-				return true; // keep window open until user decides
-			}
-			return false; // go ahead and close window
-		}
-	}
+    /**
+     * Handles user closing the window by chacking if editor is dirty and prompting
+     * user to save.
+     */
+    private class CloseRequestHandler implements CloseRequestCallback {
+        @Override
+        public boolean run() {
+            settings.setInt("window-width", JournalWindow.this.getWidth());
+            settings.setInt("window-height", JournalWindow.this.getHeight());
+            if (isDirty()) {
+                AlertDialog alert = new AlertDialog("Unsaved Changes",
+                        "Do you want to save your edits to " + previousDate + "?");
+                alert.addResponse(DISCARD, "Discard");
+                alert.addResponse(SAVE, "Save");
+                alert.addResponse(CANCEL, "Cancel");
+                alert.setCloseResponse(CANCEL);
+                alert.setResponseAppearance(SAVE, ResponseAppearance.SUGGESTED);
+                alert.setResponseAppearance(DISCARD, ResponseAppearance.DESTRUCTIVE);
+                alert.setDefaultResponse(SAVE);
+                Cancellable cancellable = new Cancellable();
+                alert.choose(JournalWindow.this, cancellable, (_, result, _) -> {
+                    String button = alert.chooseFinish(result);
+                    switch (button) {
+                        case "save": {
+                            // save previous date's text & close window
+                            save(convert(calendar.getDate()), getText());
+                            break;
+                        }
+                        case DISCARD: {
+                            // do nothing, close window
+                            setDirtyTitle(false);
+                            JournalWindow.this.close();
+                            break;
+                        }
+                        case CANCEL: {
+                            // do nothing, keep window open
+                            cancellable.cancel();
+                            break;
+                        }
+                        default:
+                            throw new IllegalArgumentException("Unexpected value: " + button);
+                    }
+                });
+                return true; // keep window open until user decides
+            }
+            return false; // go ahead and close window
+        }
+    }
 
-	private static final String CANCEL = "cancel";
-	private static final String DISCARD = "discard";
-	private static final String SAVE = "save";
+    private static final String CANCEL = "cancel";
+    private static final String DISCARD = "discard";
+    private static final String SAVE = "save";
 
-	@GtkChild(name = "back_button")
-	public Button backButton;
+    @GtkChild(name = "back_button")
+    public Button backButton;
 
-	@GtkChild(name = "calendar")
-	public Calendar calendar;
+    @GtkChild(name = "calendar")
+    public Calendar calendar;
 
-	@GtkChild(name = "existing_journal_location")
-	public ButtonContent existingJournalLocation;
+    @GtkChild(name = "existing_journal_location")
+    public ButtonContent existingJournalLocation;
 
-	@GtkChild(name = "existing_journal_password")
-	public PasswordEntryRow existingJournalPassword;
+    @GtkChild(name = "existing_journal_password")
+    public PasswordEntryRow existingJournalPassword;
 
-	private File file = null;
+    private File file = null;
 
-	@GtkChild(name = "new_journal_location")
-	public ButtonContent newJournalLocation;
+    @GtkChild(name = "new_journal_location")
+    public ButtonContent newJournalLocation;
 
-	@GtkChild(name = "new_journal_password_1")
-	public PasswordEntryRow newJournalPassword1;
+    @GtkChild(name = "new_journal_password_1")
+    public PasswordEntryRow newJournalPassword1;
 
-	@GtkChild(name = "new_journal_password_2")
-	public PasswordEntryRow newJournalPassword2;
+    @GtkChild(name = "new_journal_password_2")
+    public PasswordEntryRow newJournalPassword2;
 
-	private LocalDate previousDate = null;
+    private LocalDate previousDate = null;
 
-	private String previousText = null;
+    private String previousText = null;
 
-	private Settings settings;
+    private Settings settings;
 
-	@GtkChild(name = "stack")
-	public ViewStack stack;
+    @GtkChild(name = "stack")
+    public ViewStack stack;
 
-	@GtkChild(name = "textview")
-	public TextView textView;
+    @GtkChild(name = "textview")
+    public TextView textView;
 
-	@GtkChild(name = "toaster")
-	public ToastOverlay toaster;
+    @GtkChild(name = "toaster")
+    public ToastOverlay toaster;
 
-	@GtkChild(name = "window_title")
-	public WindowTitle windowTitle;
+    @GtkChild(name = "window_title")
+    public WindowTitle windowTitle;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param application {@link Application}
-	 */
-	public JournalWindow(Application application) {
-		setApplication(application);
-		present();
-	}
+    /**
+     * Constructor.
+     *
+     * @param application {@link Application}
+     */
+    public JournalWindow(Application application) {
+        setApplication(application);
+        present();
+    }
 
-	private void attachToYearAndMonthButtons() {
-		calendar.onNextMonth(this::onDateSelected);
-		calendar.onPrevMonth(this::onDateSelected);
-		calendar.onNextYear(this::onDateSelected);
-		calendar.onPrevYear(this::onDateSelected);
-	}
+    private void attachToYearAndMonthButtons() {
+        calendar.onNextMonth(this::onDateSelected);
+        calendar.onPrevMonth(this::onDateSelected);
+        calendar.onNextYear(this::onDateSelected);
+        calendar.onPrevYear(this::onDateSelected);
+    }
 
-	private LocalDate convert(DateTime date) {
-		return LocalDate.of(date.getYear(), date.getMonth(), date.getDayOfMonth());
-	}
+    private LocalDate convert(DateTime date) {
+        return LocalDate.of(date.getYear(), date.getMonth(), date.getDayOfMonth());
+    }
 
-	private DateTime convert(LocalDate localDate) {
-		return new DateTime(TimeZone.local(), localDate.getYear(), localDate.getMonthValue(), localDate.getDayOfMonth(),
-				0, 0, 0);
-	}
+    private DateTime convert(LocalDate localDate) {
+        return new DateTime(TimeZone.local(), localDate.getYear(), localDate.getMonthValue(), localDate.getDayOfMonth(),
+                0, 0, 0);
+    }
 
-	private void createCalendarNavigationActions() {
-		// First action
-		var firstAction = new SimpleAction("first", null);
-		firstAction.onActivate(_ -> onFirstAction());
-		super.addAction(firstAction);
+    private void createCalendarNavigationActions() {
+        // First action
+        var firstAction = new SimpleAction("first", null);
+        firstAction.onActivate(_ -> onFirstAction());
+        super.addAction(firstAction);
 
-		// Previous action
-		var previousAction = new SimpleAction("previous", null);
-		previousAction.onActivate(_ -> onPreviousAction());
-		super.addAction(previousAction);
+        // Previous action
+        var previousAction = new SimpleAction("previous", null);
+        previousAction.onActivate(_ -> onPreviousAction());
+        super.addAction(previousAction);
 
-		// Today action
-		var todayAction = new SimpleAction("today", null);
-		todayAction.onActivate(_ -> onTodayAction());
-		super.addAction(todayAction);
+        // Today action
+        var todayAction = new SimpleAction("today", null);
+        todayAction.onActivate(_ -> onTodayAction());
+        super.addAction(todayAction);
 
-		// Next action
-		var nextAction = new SimpleAction("next", null);
-		nextAction.onActivate(_ -> onNextAction());
-		super.addAction(nextAction);
+        // Next action
+        var nextAction = new SimpleAction("next", null);
+        nextAction.onActivate(_ -> onNextAction());
+        super.addAction(nextAction);
 
-		// Last action
-		var lastAction = new SimpleAction("last", null);
-		lastAction.onActivate(_ -> onLastAction());
-		super.addAction(lastAction);
-	}
+        // Last action
+        var lastAction = new SimpleAction("last", null);
+        lastAction.onActivate(_ -> onLastAction());
+        super.addAction(lastAction);
+    }
 
-	private void createEditorPageActions() {
-		createCalendarNavigationActions();
-		attachToYearAndMonthButtons();
+    private void createEditorPageActions() {
+        createCalendarNavigationActions();
+        attachToYearAndMonthButtons();
 
-		// Save action
-		var saveAction = new SimpleAction("save_journal", null);
-		saveAction.onActivate(_ -> onSaveAction());
-		super.addAction(saveAction);
-	}
+        // Save action
+        var saveAction = new SimpleAction("save_journal", null);
+        saveAction.onActivate(_ -> onSaveAction());
+        super.addAction(saveAction);
+    }
 
-	private void createNewJournalPageActions() {
-		// New -> Browse action
-		var newBrowseAction = new SimpleAction("new_browse_for_folder", null);
-		newBrowseAction.onActivate(_ -> onNewBrowseAction());
-		super.addAction(newBrowseAction);
+    private void createNewJournalPageActions() {
+        // New -> Browse action
+        var newBrowseAction = new SimpleAction("new_browse_for_folder", null);
+        newBrowseAction.onActivate(_ -> onNewBrowseAction());
+        super.addAction(newBrowseAction);
 
-		// Create New Journal action
-		var createNewJournalAction = new SimpleAction("create_journal", null);
-		createNewJournalAction.onActivate(_ -> onCreateNewJournalAction());
-		super.addAction(createNewJournalAction);
-	}
+        // Create New Journal action
+        var createNewJournalAction = new SimpleAction("create_journal", null);
+        createNewJournalAction.onActivate(_ -> onCreateNewJournalAction());
+        super.addAction(createNewJournalAction);
+    }
 
-	private void createOpenJournalPageActions() {
-		// Browse for existing journal action
-		var existingBrowseAction = new SimpleAction("open_browse_for_journal", null);
-		existingBrowseAction.onActivate(_ -> onExistingBrowseAction());
-		super.addAction(existingBrowseAction);
+    private void createOpenJournalPageActions() {
+        // Browse for existing journal action
+        var existingBrowseAction = new SimpleAction("open_browse_for_journal", null);
+        existingBrowseAction.onActivate(_ -> onExistingBrowseAction());
+        super.addAction(existingBrowseAction);
 
-		// Open journal action
-		var openJournalAction = new SimpleAction("open_journal", null);
-		openJournalAction.onActivate(_ -> onOpenJournalAction());
-		super.addAction(openJournalAction);
-	}
+        // Open journal action
+        var openJournalAction = new SimpleAction("open_journal", null);
+        openJournalAction.onActivate(_ -> onOpenJournalAction());
+        super.addAction(openJournalAction);
+    }
 
-	private void createPageNavigationActions() {
-		// Back action
-		var backAction = new SimpleAction("back", null);
-		backAction.onActivate(_ -> {
-			backButton.setVisible(false);
-			stack.setVisibleChildName("home-page");
-			// don't give other pages access to selected file
-			file = null;
-		});
-		super.addAction(backAction);
+    private void createPageNavigationActions() {
+        // Back action
+        var backAction = new SimpleAction("back", null);
+        backAction.onActivate(_ -> {
+            backButton.setVisible(false);
+            stack.setVisibleChildName("home-page");
+            // don't give other pages access to selected file
+            file = null;
+        });
+        super.addAction(backAction);
 
-		// New Page action
-		var newPageAction = new SimpleAction("new", null);
-		newPageAction.onActivate(_ -> {
-			backButton.setVisible(true);
-			stack.setVisibleChildName("new-page");
-		});
-		super.addAction(newPageAction);
+        // New Page action
+        var newPageAction = new SimpleAction("new", null);
+        newPageAction.onActivate(_ -> {
+            backButton.setVisible(true);
+            stack.setVisibleChildName("new-page");
+        });
+        super.addAction(newPageAction);
 
-		// Open Page action
-		var openPageAction = new SimpleAction("open", null);
-		openPageAction.onActivate(_ -> {
-			backButton.setVisible(true);
-			stack.setVisibleChildName("open-page");
-		});
-		super.addAction(openPageAction);
-	}
+        // Open Page action
+        var openPageAction = new SimpleAction("open", null);
+        openPageAction.onActivate(_ -> {
+            backButton.setVisible(true);
+            stack.setVisibleChildName("open-page");
+        });
+        super.addAction(openPageAction);
+    }
 
-	private void displayDateEntry(LocalDate date) {
-		if (isDirty()) {
-			promptToSavePrevious(date);
-		} else {
-			TextBuffer buffer = textView.getBuffer();
-			if (JournalManager.hasDate(date)) {
-				try {
-					String entry = JournalManager.getEntry(date);
-					buffer.setText(entry, entry.length());
-				} catch (JournalException e) {
-					notifyUser(e.getMessage());
-				}
-			} else {
-				buffer.setText("", 0);
-			}
-			setDirtyTitle(false);
-		}
-	}
+    private void displayDateEntry(LocalDate date) {
+        if (isDirty()) {
+            promptToSavePrevious(date);
+        } else {
+            TextBuffer buffer = textView.getBuffer();
+            if (JournalManager.hasDate(date)) {
+                try {
+                    String entry = JournalManager.getEntry(date);
+                    buffer.setText(entry, entry.length());
+                } catch (JournalException e) {
+                    notifyUser(e.getMessage());
+                }
+            } else {
+                buffer.setText("", 0);
+            }
+            setDirtyTitle(false);
+        }
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!super.equals(obj) || (getClass() != obj.getClass())) {
-			return false;
-		}
-		JournalWindow other = (JournalWindow) obj;
-		return Objects.equals(stack, other.stack);
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj) || (getClass() != obj.getClass())) {
+            return false;
+        }
+        JournalWindow other = (JournalWindow) obj;
+        return Objects.equals(stack, other.stack);
+    }
 
-	private String getText() {
-		TextIter startIter = new TextIter();
-		TextIter endIter = new TextIter();
-		textView.getBuffer().getBounds(startIter, endIter);
-		return textView.getBuffer().getText(startIter, endIter, true);
-	}
+    private String getText() {
+        TextIter startIter = new TextIter();
+        TextIter endIter = new TextIter();
+        textView.getBuffer().getBounds(startIter, endIter);
+        return textView.getBuffer().getText(startIter, endIter, true);
+    }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + Objects.hash(stack);
-		return result;
-	}
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + Objects.hash(stack);
+        return result;
+    }
 
-	/**
-	 * Called after injection of objects annotated @GtkChild.
-	 */
-	@InstanceInit
-	public void init() {
-		settings = new Settings("ca.footeware.javagi.journal");
-		int width = settings.getInt("window-width");
-		int height = settings.getInt("window-height");
-		this.setDefaultSize(width, height);
+    /**
+     * Called after injection of objects annotated @GtkChild.
+     */
+    @InstanceInit
+    public void init() {
+        settings = new Settings("ca.footeware.javagi.journal");
+        int width = settings.getInt("window-width");
+        int height = settings.getInt("window-height");
+        this.setDefaultSize(width, height);
 
-		// css
-		CssProvider cssProvider = new CssProvider();
-		cssProvider.loadFromResource("/journal/styles.css");
-		Gtk.styleContextAddProviderForDisplay(Display.getDefault(), cssProvider,
-				Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
+        // css
+        CssProvider cssProvider = new CssProvider();
+        cssProvider.loadFromResource("/journal/styles.css");
+        Gtk.styleContextAddProviderForDisplay(Display.getDefault(), cssProvider,
+                Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
 
-		// actions
-		createPageNavigationActions();
-		createNewJournalPageActions();
-		createOpenJournalPageActions();
-		createEditorPageActions();
-		createCalendarNavigationActions();
+        // actions
+        createPageNavigationActions();
+        createNewJournalPageActions();
+        createOpenJournalPageActions();
+        createEditorPageActions();
+        createCalendarNavigationActions();
 
-		// configure TextView
-		textView.setWrapMode(WrapMode.WORD);
-		textView.getBuffer().onChanged(this::onBufferChanged);
-		textView.getBuffer().addCommitNotify(TextBufferNotifyFlags.BEFORE_INSERT, new TextBufferCommitNotify() {
-			@Override
-			public void run(TextBuffer buffer, Set<TextBufferNotifyFlags> flags, int position, int length) {
-				previousDate = convert(calendar.getDate());
-			}
-		});
+        // configure TextView
+        textView.setWrapMode(WrapMode.WORD);
+        textView.getBuffer().onChanged(this::onBufferChanged);
+        textView.getBuffer().addCommitNotify(TextBufferNotifyFlags.BEFORE_INSERT, new TextBufferCommitNotify() {
+            @Override
+            public void run(TextBuffer buffer, Set<TextBufferNotifyFlags> flags, int position, int length) {
+                previousDate = convert(calendar.getDate());
+            }
+        });
 
-		this.onCloseRequest(new CloseRequestHandler());
-	}
+        this.onCloseRequest(new CloseRequestHandler());
+    }
 
-	/**
-	 * Determines if the text buffer contents have changed since last save and also
-	 * checks that the window title is flagged as changed.
-	 *
-	 * @return boolean true if editor has unsaved edits and the title indicates
-	 *         dirty state
-	 */
-	private boolean isDirty() {
-		return windowTitle.getTitle().startsWith("•") && textView.getBuffer().getModified();
-	}
+    /**
+     * Determines if the text buffer contents have changed since last save and also
+     * checks that the window title is flagged as changed.
+     *
+     * @return boolean true if editor has unsaved edits and the title indicates
+     *         dirty state
+     */
+    private boolean isDirty() {
+        return windowTitle.getTitle().startsWith("•") && textView.getBuffer().getModified();
+    }
 
-	private void markEntryDays() {
-		calendar.clearMarks();
-		List<LocalDate> entryDates = JournalManager.getEntryDates();
-		LocalDate date = convert(calendar.getDate());
-		for (LocalDate localDate : entryDates) {
-			if (localDate.getYear() == date.getYear() && localDate.getMonth() == date.getMonth()) {
-				calendar.markDay(localDate.getDayOfMonth());
-			}
-		}
-	}
+    private void markEntryDays() {
+        calendar.clearMarks();
+        List<LocalDate> entryDates = JournalManager.getEntryDates();
+        LocalDate date = convert(calendar.getDate());
+        for (LocalDate localDate : entryDates) {
+            if (localDate.getYear() == date.getYear() && localDate.getMonth() == date.getMonth()) {
+                calendar.markDay(localDate.getDayOfMonth());
+            }
+        }
+    }
 
-	private void notifyUser(String message) {
-		toaster.addToast(new Toast(message));
-	}
+    private void notifyUser(String message) {
+        toaster.addToast(new Toast(message));
+    }
 
-	private void onBufferChanged() {
-		setDirtyTitle(true);
-		previousText = getText();
-	}
+    private void onBufferChanged() {
+        setDirtyTitle(true);
+        previousText = getText();
+    }
 
-	private void onCreateNewJournalAction() {
-		String password1 = newJournalPassword1.getText();
-		String password2 = newJournalPassword2.getText();
-		if (file != null && !password1.isEmpty() && !password2.isEmpty() && password1.equals(password2)) {
-			try {
-				JournalManager.createJournal(file, password2);
-				JournalManager.saveJournal();
-				stack.setVisibleChildName("editor-page");
-				backButton.setVisible(false);
-				windowTitle.setSubtitle(file.getPath());
-			} catch (IOException | JournalException e) {
-				notifyUser(e.getMessage());
-			}
-		}
-	}
+    private void onCreateNewJournalAction() {
+        String password1 = newJournalPassword1.getText();
+        String password2 = newJournalPassword2.getText();
+        if (file != null && !password1.isEmpty() && !password2.isEmpty() && password1.equals(password2)) {
+            try {
+                JournalManager.createJournal(file, password2);
+                JournalManager.saveJournal();
+                stack.setVisibleChildName("editor-page");
+                backButton.setVisible(false);
+                windowTitle.setSubtitle(file.getPath());
+            } catch (IOException | JournalException e) {
+                notifyUser(e.getMessage());
+            }
+        }
+    }
 
-	/**
-	 * Called when a date is selected in the calendar.
-	 */
-	@GtkCallback(name = "onDateSelected")
-	public void onDateSelected() {
-		markEntryDays();
-		displayDateEntry(convert(calendar.getDate()));
-		setDirtyTitle(false);
-		textView.getBuffer().setModified(false);
-	}
+    /**
+     * Called when a date is selected in the calendar.
+     */
+    @GtkCallback(name = "onDateSelected")
+    public void onDateSelected() {
+        markEntryDays();
+        displayDateEntry(convert(calendar.getDate()));
+        setDirtyTitle(false);
+        textView.getBuffer().setModified(false);
+    }
 
-	/**
-	 * Prompts the user to browse local file system to choose the name and location
-	 * of an existing journal file.
-	 */
-	private void onExistingBrowseAction() {
-		FileDialog fileDialog = new FileDialog();
-		fileDialog.open(this, null, (_, result, _) -> {
-			try {
-				file = fileDialog.openFinish(result);
-				existingJournalLocation.setLabel(file.getPath());
-				existingJournalPassword.grabFocus();
-			} catch (GErrorException _) {
-				// ignore - user closed dialog
-			}
-		});
-	}
+    /**
+     * Prompts the user to browse local file system to choose the name and location
+     * of an existing journal file.
+     */
+    private void onExistingBrowseAction() {
+        FileDialog fileDialog = new FileDialog();
+        fileDialog.open(this, null, (_, result, _) -> {
+            try {
+                file = fileDialog.openFinish(result);
+                existingJournalLocation.setLabel(file.getPath());
+                existingJournalPassword.grabFocus();
+            } catch (GErrorException _) {
+                // ignore - user closed dialog
+            }
+        });
+    }
 
-	private void onFirstAction() {
-		DateTime dateTime = convert(JournalManager.getFirstEntryDate());
-		calendar.selectDay(dateTime);
-	}
+    private void onFirstAction() {
+        DateTime dateTime = convert(JournalManager.getFirstEntryDate());
+        calendar.selectDay(dateTime);
+    }
 
-	private void onLastAction() {
-		DateTime dateTime = convert(JournalManager.getLastEntryDate());
-		calendar.selectDay(dateTime);
-	}
+    private void onLastAction() {
+        DateTime dateTime = convert(JournalManager.getLastEntryDate());
+        calendar.selectDay(dateTime);
+    }
 
-	/**
-	 * Prompts the user to browse local file system to choose a name and location
-	 * for a new journal file.
-	 */
-	private void onNewBrowseAction() {
-		FileDialog fileDialog = new FileDialog();
-		fileDialog.save(this, null, (_, result, _) -> {
-			try {
-				file = fileDialog.saveFinish(result);
-				newJournalLocation.setLabel(file.getPath());
-				newJournalPassword1.grabFocus();
-			} catch (GErrorException _) {
-				// ignore - user closed dialog
-			}
-		});
-	}
+    /**
+     * Prompts the user to browse local file system to choose a name and location
+     * for a new journal file.
+     */
+    private void onNewBrowseAction() {
+        FileDialog fileDialog = new FileDialog();
+        fileDialog.save(this, null, (_, result, _) -> {
+            try {
+                file = fileDialog.saveFinish(result);
+                newJournalLocation.setLabel(file.getPath());
+                newJournalPassword1.grabFocus();
+            } catch (GErrorException _) {
+                // ignore - user closed dialog
+            }
+        });
+    }
 
-	private void onNextAction() {
-		DateTime dateTime = calendar.getDate();
-		LocalDate nextEntryDate = JournalManager.getNextEntryDate(convert(dateTime));
-		calendar.selectDay(convert(nextEntryDate));
-	}
+    private void onNextAction() {
+        DateTime dateTime = calendar.getDate();
+        LocalDate nextEntryDate = JournalManager.getNextEntryDate(convert(dateTime));
+        calendar.selectDay(convert(nextEntryDate));
+    }
 
-	/**
-	 * Called when a journal is first opened. Shows the Editor page, hides the Back
-	 * button, draws calendar and selects today's date.
-	 */
-	private void onOpenJournalAction() {
-		String password = existingJournalPassword.getText();
-		if (file != null) {
-			try {
-				JournalManager.openJournal(file, password);
-				stack.setVisibleChildName("editor-page");
-				backButton.setVisible(false);
-				markEntryDays();
-				textView.grabFocus();
-				calendar.selectDay(DateTime.nowLocal());
-				displayDateEntry(LocalDate.now());
-				windowTitle.setSubtitle(file.getPath());
-				// clear above indication of change
-				textView.getBuffer().setModified(false);
-				setDirtyTitle(false);
-			} catch (JournalException e) {
-				notifyUser(e.getMessage());
-			}
-		}
-	}
+    /**
+     * Called when a journal is first opened. Shows the Editor page, hides the Back
+     * button, draws calendar and selects today's date.
+     */
+    private void onOpenJournalAction() {
+        String password = existingJournalPassword.getText();
+        if (file != null) {
+            try {
+                JournalManager.openJournal(file, password);
+                stack.setVisibleChildName("editor-page");
+                backButton.setVisible(false);
+                markEntryDays();
+                textView.grabFocus();
+                calendar.selectDay(DateTime.nowLocal());
+                displayDateEntry(LocalDate.now());
+                windowTitle.setSubtitle(file.getPath());
+                // clear above indication of change
+                textView.getBuffer().setModified(false);
+                setDirtyTitle(false);
+            } catch (JournalException e) {
+                notifyUser(e.getMessage());
+            }
+        }
+    }
 
-	private void onPreviousAction() {
-		DateTime dateTime = calendar.getDate();
-		LocalDate nextEntryDate = JournalManager.getPreviousEntryDate(convert(dateTime));
-		calendar.selectDay(convert(nextEntryDate));
-	}
+    private void onPreviousAction() {
+        DateTime dateTime = calendar.getDate();
+        LocalDate nextEntryDate = JournalManager.getPreviousEntryDate(convert(dateTime));
+        calendar.selectDay(convert(nextEntryDate));
+    }
 
-	/**
-	 * Save button handler.
-	 */
-	private void onSaveAction() {
-		LocalDate localDate = convert(calendar.getDate());
-		save(localDate, getText());
-	}
+    /**
+     * Save button handler.
+     */
+    private void onSaveAction() {
+        LocalDate localDate = convert(calendar.getDate());
+        save(localDate, getText());
+    }
 
-	/**
-	 * Selects today's date in the calendar.
-	 */
-	private void onTodayAction() {
-		calendar.selectDay(DateTime.nowLocal());
-	}
+    /**
+     * Selects today's date in the calendar.
+     */
+    private void onTodayAction() {
+        calendar.selectDay(DateTime.nowLocal());
+    }
 
-	/**
-	 * Prompts the user to save unsaved modifications to the text buffer.
-	 *
-	 * @param newDate {@link LocalDate}
-	 */
-	private void promptToSavePrevious(LocalDate newDate) {
-		AlertDialog alert = new AlertDialog("Unsaved Changes",
-				"Do you want to save your edits to " + previousDate + "?");
-		alert.addResponse(DISCARD, "Discard");
-		alert.addResponse(SAVE, "Save");
-		alert.addResponse(CANCEL, "Cancel");
-		alert.setCloseResponse(CANCEL);
-		alert.setResponseAppearance(SAVE, ResponseAppearance.SUGGESTED);
-		alert.setResponseAppearance(DISCARD, ResponseAppearance.DESTRUCTIVE);
-		alert.setDefaultResponse(SAVE);
-		alert.choose(this, null, (_, result, _) -> {
-			String button = alert.chooseFinish(result);
-			switch (button) {
-			case "save": {
-				// save previous date's text
-				save(previousDate, previousText);
-				// display previous date
-				calendar.selectDay(convert(previousDate));
-				setDirtyTitle(false);
-				break;
-			}
-			case DISCARD: {
-				setDirtyTitle(false);
-				textView.getBuffer().setModified(false);
-				// display new date
-				displayDateEntry(newDate);
-				break;
-			}
-			case CANCEL: {
-				// store displayed text
-				String text = getText();
-				// go back to date selected before the alert
-				calendar.selectDay(convert(previousDate));
-				// put the text back in the editor
-				textView.getBuffer().setText(text, text.length());
-				// simulate the state before the click that caused the alert
-				setDirtyTitle(true);
-				break;
-			}
-			default:
-				throw new IllegalArgumentException("Unexpected value: " + button);
-			}
-		});
-	}
+    /**
+     * Prompts the user to save unsaved modifications to the text buffer.
+     *
+     * @param newDate {@link LocalDate}
+     */
+    private void promptToSavePrevious(LocalDate newDate) {
+        AlertDialog alert = new AlertDialog("Unsaved Changes",
+                "Do you want to save your edits to " + previousDate + "?");
+        alert.addResponse(DISCARD, "Discard");
+        alert.addResponse(SAVE, "Save");
+        alert.addResponse(CANCEL, "Cancel");
+        alert.setCloseResponse(CANCEL);
+        alert.setResponseAppearance(SAVE, ResponseAppearance.SUGGESTED);
+        alert.setResponseAppearance(DISCARD, ResponseAppearance.DESTRUCTIVE);
+        alert.setDefaultResponse(SAVE);
+        alert.choose(this, null, (_, result, _) -> {
+            String button = alert.chooseFinish(result);
+            switch (button) {
+                case "save": {
+                    // save previous date's text
+                    save(previousDate, previousText);
+                    // display previous date
+                    calendar.selectDay(convert(previousDate));
+                    setDirtyTitle(false);
+                    break;
+                }
+                case DISCARD: {
+                    setDirtyTitle(false);
+                    textView.getBuffer().setModified(false);
+                    // display new date
+                    displayDateEntry(newDate);
+                    break;
+                }
+                case CANCEL: {
+                    // store displayed text
+                    String text = getText();
+                    // go back to date selected before the alert
+                    calendar.selectDay(convert(previousDate));
+                    // put the text back in the editor
+                    textView.getBuffer().setText(text, text.length());
+                    // simulate the state before the click that caused the alert
+                    setDirtyTitle(true);
+                    break;
+                }
+                default:
+                    throw new IllegalArgumentException("Unexpected value: " + button);
+            }
+        });
+    }
 
-	/**
-	 * Adds the current date and text as a new journal entry, writes it to disk and
-	 * updates the buffer modified flag and the window title.
-	 *
-	 * @param date {@link LocalDate}
-	 * @param text {@link String}
-	 */
-	private void save(LocalDate date, String text) {
-		try {
-			JournalManager.addEntry(date, text);
-			JournalManager.saveJournal();
-			setDirtyTitle(false);
-			notifyUser("Journal was saved.");
-		} catch (JournalException e) {
-			notifyUser(e.getMessage());
-		}
-	}
+    /**
+     * Adds the current date and text as a new journal entry, writes it to disk and
+     * updates the buffer modified flag and the window title.
+     *
+     * @param date {@link LocalDate}
+     * @param text {@link String}
+     */
+    private void save(LocalDate date, String text) {
+        try {
+            JournalManager.addEntry(date, text);
+            JournalManager.saveJournal();
+            setDirtyTitle(false);
+            notifyUser("Journal was saved.");
+        } catch (JournalException e) {
+            notifyUser(e.getMessage());
+        }
+    }
 
-	private void setDirtyTitle(boolean dirty) {
-		windowTitle.setTitle(dirty ? "• Journal" : "Journal");
-	}
+    private void setDirtyTitle(boolean dirty) {
+        windowTitle.setTitle(dirty ? "• Journal" : "Journal");
+    }
 
-	@Override
-	public String toString() {
-		return "JournalWindow [file=" + file + "]";
-	}
+    @Override
+    public String toString() {
+        return "JournalWindow [file=" + file + "]";
+    }
 }
