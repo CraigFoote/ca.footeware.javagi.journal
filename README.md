@@ -70,7 +70,7 @@ This command took over two minutes on my laptop (🤔) with the last goal provid
 
 ### Running Locally
 
-When the flatpak is built, the gschema file is copied to `/app/share/glib-2.0/schemas/` and `glib-compile-schemas` is run, making the schema available. If you want to run the Journal application before building a flatpak, there is an eclipse `javagi.journal-RUN.launch` configuration for that. But you need to copy the gschema to `/usr/share/glib-2.0/schemas/` and run `glib-compile-schemas` there, i.e. from `/src/main/resources`:
+When the .flatpak is installed, the gschema file is copied to `/app/share/glib-2.0/schemas/` and `glib-compile-schemas` is run, making the schema available. If you want to run the Journal application before building a flatpak, there is an eclipse `javagi.journal-RUN.launch` configuration for that. But you need to copy the gschema to `/usr/share/glib-2.0/schemas/` and run `glib-compile-schemas` there, i.e. from `/src/main/resources`:
 
 ```
 sudo cp ./ca.footeware.javagi.journal.gschema.xml /usr/share/glib-2.0/schemas/
