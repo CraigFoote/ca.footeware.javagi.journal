@@ -1,3 +1,7 @@
 .today {
 	color: cyan;
 }
+
+progressbar progress {
+    background-color: lime;
+}
