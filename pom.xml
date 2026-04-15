@@ -149,7 +149,7 @@
 								<release>
 									<version>1.0.0</version>
 									<date>2025-12-01</date>
-                                    <!--descriptions must contain <p>, <ul> and <li> tags in CDATA block.-->
+                  					<!--descriptions must contain <p>, <ul> and <li> tags in CDATA block.-->
 									<!--see https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-description-->
 									<description><![CDATA[
 									<p>Initial release</p>
@@ -165,6 +165,16 @@
 									<p>Built using <code>flatpak-maven-plugin</code>'s three goals</p>
 									<ul>
 										<li>Ran the complete build using the above plugin rather than its first goal and then CLI invocations.</li>
+									</ul>
+									]]></description>
+								</release>
+								<release>
+									<version>1.2.0</version>
+									<date>2026-05-14</date>
+									<description><![CDATA[
+									<p>Added multi-threading with progress bar.</p>
+									<ul>
+										<li>Starting a new thread for saving with progress bar to editor page.</li>
 									</ul>
 									]]></description>
 								</release>
