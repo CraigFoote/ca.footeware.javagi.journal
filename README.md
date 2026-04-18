@@ -2,9 +2,9 @@
 
 ## An encrypted daily journal for flatpak.
 
-Written in Java using [Java-GI](https://https://java-gi.org/) Gtk/Adw bindings and packaged as a flatpak. It uses the [flatpak-maven-plugin](https://github.com/CraigFoote/flatpak-maven-plugin) to create flatpak artifacts. Have a look at this project's `pom.xml` configuration for details.
+Written in Java using [Java-GI](https://java-gi.org/) Gtk/Adw bindings and packaged as a flatpak. It uses the [flatpak-maven-plugin](https://github.com/CraigFoote/flatpak-maven-plugin) to create flatpak artifacts. Have a look at this project's `pom.xml` configuration for details.
 
-The code is compiled with Java 25 (the minimum for Java-GI is 22) and is packaged in a flatpak container with runtimes *org.gnome.Platform* 49, *org.gnome.Sdk* 49, and *org.freedesktop.Sdk.Extension.openjdk25* that includes the openjdk-25 JRE that runs the Journal application.
+The code is compiled with Java 25 (the minimum for Java-GI) and is packaged in a flatpak container with runtimes *org.gnome.Platform* 49, *org.gnome.Sdk* 49, and *org.freedesktop.Sdk.Extension.openjdk25* that includes the openjdk-25 JRE that runs the Journal application.
 
 The encryption-by-password algorithm should provide privacy. The files used can be named anything and is just a plain text Java Properties file, e.g.:
 

@@ -5,7 +5,6 @@ package ca.footeware.javagi.journal.model;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -67,17 +66,15 @@ public class JournalManager {
 	public static void createJournal(String pathName, String password) throws IOException {
 		File file = new File(pathName);
 		if (file.exists()) {
-			// nasty but the Gtk FileDialog would have prompted us to overwrite
-			if (!file.canWrite()) {
-				throw new IOException("Unknown error, file cannot be written to.");
+			journal = new Journal(file, password);
+		} else {
+			boolean fileCreated = file.createNewFile();
+			if (fileCreated) {
+				journal = new Journal(file, password);
+			} else {
+				throw new IOException("Error: file " + pathName + " already exists.");
 			}
-			Files.delete(file.toPath());
 		}
-		boolean newFile = file.createNewFile();
-		if (!newFile) {
-			throw new IOException("Unknown error, file was not created.");
-		}
-		journal = new Journal(file, password);
 	}
 
 	/**

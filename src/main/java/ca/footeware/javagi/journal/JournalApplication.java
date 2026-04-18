@@ -26,79 +26,79 @@ import org.javagi.gobject.annotations.RegisteredType;
 @RegisteredType(name = "JournalApplication")
 public class JournalApplication extends Application {
 
-    /**
-     * Application entry point.
-     *
-     * @param args {@link String}[]
-     */
-    public static void main(String[] args) {
-        var app = new JournalApplication();
-        app.run(args);
-    }
+	/**
+	 * Application entry point.
+	 *
+	 * @param args {@link String}[]
+	 */
+	public static void main(String[] args) {
+		var app = new JournalApplication();
+		app.run(args);
+	}
 
-    private GtkBuilder builder;
+	private GtkBuilder builder;
 
-    public JournalApplication() {
-        setApplicationId("ca.footeware.javagi.journal");
-        setFlags(ApplicationFlags.DEFAULT_FLAGS);
-    }
+	public JournalApplication() {
+		setApplicationId("ca.footeware.javagi.journal");
+		setFlags(ApplicationFlags.DEFAULT_FLAGS);
+	}
 
-    @Override
-    public void activate() {
-        var display = Display.getDefault();
-        var iconTheme = IconTheme.getForDisplay(display);
-        iconTheme.addResourcePath("/journal");
+	@Override
+	public void activate() {
+		var display = Display.getDefault();
+		var iconTheme = IconTheme.getForDisplay(display);
+		iconTheme.addResourcePath("/journal");
 
-        try {
-            byte[] bytes = JournalApplication.class.getResourceAsStream("/journal.gresource").readAllBytes();
-            var resources = Resource.fromData(bytes);
-            resources.resourcesRegister();
-        } catch (IOException | GErrorException e) {
-            e.printStackTrace();
-        }
+		try {
+			byte[] bytes = JournalApplication.class.getResourceAsStream("/journal.gresource").readAllBytes();
+			var resources = Resource.fromData(bytes);
+			resources.resourcesRegister();
+		} catch (IOException | GErrorException e) {
+			e.printStackTrace();
+		}
 
-        Window win = this.getActiveWindow();
-        if (win == null) {
-            win = new JournalWindow(this);
-        }
-        win.present();
-    }
+		Window win = this.getActiveWindow();
+		if (win == null) {
+			win = new JournalWindow(this);
+		}
+		win.present();
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (!super.equals(obj) || (getClass() != obj.getClass())) {
-            return false;
-        }
-        JournalApplication other = (JournalApplication) obj;
-        return Objects.equals(builder, other.builder);
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj) || (getClass() != obj.getClass())) {
+			return false;
+		}
+		JournalApplication other = (JournalApplication) obj;
+		return Objects.equals(builder, other.builder);
+	}
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + Objects.hash(builder);
-        return result;
-    }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + Objects.hash(builder);
+		return result;
+	}
 
-    @InstanceInit
-    public void init() {
-        var aboutAction = new SimpleAction("about", null);
-        aboutAction.onActivate(this::onAboutAction);
-        addAction(aboutAction);
+	@InstanceInit
+	public void init() {
+		var aboutAction = new SimpleAction("about", null);
+		aboutAction.onActivate(this::onAboutAction);
+		addAction(aboutAction);
 
-        var shortcutsAction = new SimpleAction("show-help-overlay", null);
-        shortcutsAction.onActivate(this::onShortcutsAction);
-        setAccelsForAction("app.show-help-overlay", new String[] { "<ctrl>question" });
-        addAction(shortcutsAction);
+		var shortcutsAction = new SimpleAction("show-help-overlay", null);
+		shortcutsAction.onActivate(this::onShortcutsAction);
+		setAccelsForAction("app.show-help-overlay", new String[] { "<ctrl>question" });
+		addAction(shortcutsAction);
 
-        builder = new GtkBuilder();
-    }
+		builder = new GtkBuilder();
+	}
 
-    // @formatter:off
+	// @formatter:off
 	private void onAboutAction(Variant parameter) {
 		String version = "unknown";
 		Properties properties = new Properties();
@@ -125,12 +125,14 @@ public class JournalApplication extends Application {
  	}
  	// @formatter:on
 
-    private void onShortcutsAction(Variant variant) {
-        try {
-            builder.addFromResource("/journal/help_overlay.ui");
-            ((Window) builder.getObject("help_overlay")).setVisible(true);
-        } catch (GErrorException e) {
-            e.printStackTrace();
-        }
-    }
+	private void onShortcutsAction(Variant variant) {
+		try {
+			builder.addFromResource("/journal/help_overlay.ui");
+			if (builder.getObject("help_overlay") instanceof Window window) {
+				window.setVisible(true);
+			}
+		} catch (GErrorException e) {
+			e.printStackTrace();
+		}
+	}
 }
