@@ -5,7 +5,7 @@
 
 	<groupId>ca.footeware.javagi</groupId>
 	<artifactId>journal</artifactId>
-	<version>1.3.0-SNAPSHOT</version>
+	<version>1.4.0-SNAPSHOT</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -185,6 +185,16 @@
 									<p>Upgraded java-gi version</p>
 									<ul>
 										<li>Upgraded java-gi dependency to version 0.15.0.</li>
+									</ul>
+									]]></description>
+								</release>
+								<release>
+									<version>1.4.0</version>
+									<date>2026-04-21</date>
+									<description><![CDATA[
+									<p>Added clamp widgets</p>
+									<ul>
+										<li>New and Open forms now wrapped in Adw.Clamp's.</li>
 									</ul>
 									]]></description>
 								</release>

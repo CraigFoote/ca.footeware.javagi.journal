@@ -99,7 +99,7 @@ flatpak run --command=flatpak-builder-lint org.flatpak.Builder appstream ca.foot
 
 ## Running the Flatpak
 
-The build result is a 60MB **ca.footeware.javagi.journal.flatpak** file. It can be copied elsewhere or double-clicked to open in GNOME Software for installation. Installed size is ~256MB. It installs a launcher and icon in the GNOME Overview application grid.
+The build result is a 60MB **/target/app/ca.footeware.javagi.journal.flatpak** file. It can be copied elsewhere or double-clicked to open in GNOME Software for installation. Installed size is ~256MB. It installs a launcher and icon in the GNOME Overview application grid.
 
 ## GUI
 

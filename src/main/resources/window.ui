@@ -104,84 +104,88 @@
                     <child>
                       <object class="AdwViewStackPage">
                         <property name="child">
-                          <object class="GtkBox">
-                            <property name="hexpand">True</property>
-                            <property name="margin-bottom">20</property>
-                            <property name="margin-end">20</property>
-                            <property name="margin-start">20</property>
-                            <property name="margin-top">20</property>
-                            <property name="orientation">vertical</property>
-                            <property name="spacing">20</property>
-                            <property name="valign">start</property>
-                            <child>
-                              <object class="GtkLabel">
-                                <property name="css-classes">heading</property>
-                                <property name="justify">center</property>
-                                <property name="label">Create a new journal.</property>
+                          <object class="AdwClamp">
+                            <property name="child">
+                              <object class="GtkBox">
                                 <property name="margin-bottom">20</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="AdwPreferencesGroup">
-                                <property name="hexpand">True</property>
-                                <property name="hexpand-set">True</property>
+                                <property name="margin-end">20</property>
+                                <property name="margin-start">20</property>
+                                <property name="margin-top">20</property>
+                                <property name="orientation">vertical</property>
                                 <child>
-                                  <object class="AdwActionRow">
-                                    <property name="accessible-role">row</property>
-                                    <property name="action-name">win.new_browse_for_folder</property>
-                                    <property name="activatable">True</property>
+                                  <object class="GtkLabel">
+                                    <property name="css-classes">heading</property>
+                                    <property name="justify">center</property>
+                                    <property name="label">Create a new journal.</property>
+                                    <property name="margin-bottom">20</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="AdwPreferencesGroup">
                                     <property name="hexpand">True</property>
-                                    <property name="title">Journal location</property>
-                                    <property name="valign">center</property>
-                                    <child type="suffix">
-                                      <object class="GtkButton">
+                                    <property name="hexpand-set">True</property>
+                                    <child>
+                                      <object class="AdwActionRow">
+                                        <property name="accessible-role">row</property>
                                         <property name="action-name">win.new_browse_for_folder</property>
-                                        <property name="child">
-                                          <object class="AdwButtonContent" id="new_journal_location">
-                                            <property name="icon-name">document-open</property>
-                                            <property name="label">Browse</property>
-                                          </object>
-                                        </property>
-                                        <property name="halign">end</property>
-                                        <property name="margin-bottom">10</property>
-                                        <property name="margin-top">10</property>
+                                        <property name="activatable">True</property>
+                                        <property name="hexpand">True</property>
+                                        <property name="title">Journal location</property>
                                         <property name="valign">center</property>
+                                        <child type="suffix">
+                                          <object class="GtkButton">
+                                            <property name="action-name">win.new_browse_for_folder</property>
+                                            <property name="child">
+                                              <object class="AdwButtonContent" id="new_journal_location">
+                                                <property name="icon-name">document-open</property>
+                                                <property name="label">Browse</property>
+                                              </object>
+                                            </property>
+                                            <property name="halign">end</property>
+                                            <property name="margin-bottom">10</property>
+                                            <property name="margin-top">10</property>
+                                            <property name="valign">center</property>
+                                            <style/>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="AdwPasswordEntryRow" id="new_journal_password_1">
+                                        <property name="input-hints">no-spellcheck|private</property>
+                                        <property name="title">Password</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="AdwPasswordEntryRow" id="new_journal_password_2">
+                                        <property name="input-hints">no-spellcheck|private</property>
+                                        <property name="title">Password again</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="AdwButtonRow">
+                                        <property name="action-name">win.create_journal</property>
+                                        <property name="start-icon-name">list-add-symbolic</property>
+                                        <property name="title"> Create Journal</property>
                                         <style/>
                                       </object>
                                     </child>
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="AdwPasswordEntryRow" id="new_journal_password_1">
-                                    <property name="input-hints">no-spellcheck|private</property>
-                                    <property name="title">Password</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="AdwPasswordEntryRow" id="new_journal_password_2">
-                                    <property name="input-hints">no-spellcheck|private</property>
-                                    <property name="title">Password again</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="AdwButtonRow">
-                                    <property name="action-name">win.create_journal</property>
-                                    <property name="start-icon-name">list-add-symbolic</property>
-                                    <property name="title"> Create Journal</property>
-                                    <style/>
+                                  <object class="GtkImage">
+                                    <property name="hexpand">True</property>
+                                    <property name="margin-top">20</property>
+                                    <property name="pixel-size">125</property>
+                                    <property name="resource">/journal/key.svg</property>
+                                    <property name="vexpand">True</property>
                                   </object>
                                 </child>
                               </object>
-                            </child>
-                            <child>
-                              <object class="GtkImage">
-                                <property name="hexpand">True</property>
-                                <property name="margin-top">20</property>
-                                <property name="pixel-size">125</property>
-                                <property name="resource">/journal/key.svg</property>
-                                <property name="vexpand">True</property>
-                              </object>
-                            </child>
+                            </property>
+                            <property name="maximum-size">1000</property>
+                            <property name="tightening-threshold">300</property>
+                            <property name="unit">px</property>
                           </object>
                         </property>
                         <property name="name">new-page</property>
@@ -190,77 +194,84 @@
                     <child>
                       <object class="AdwViewStackPage">
                         <property name="child">
-                          <object class="GtkBox">
-                            <property name="hexpand">True</property>
-                            <property name="margin-bottom">20</property>
-                            <property name="margin-end">20</property>
-                            <property name="margin-start">20</property>
-                            <property name="margin-top">20</property>
-                            <property name="orientation">vertical</property>
-                            <property name="spacing">20</property>
-                            <property name="valign">start</property>
-                            <child>
-                              <object class="GtkLabel">
-                                <property name="css-classes">heading</property>
-                                <property name="justify">center</property>
-                                <property name="label">Open an existing journal.</property>
+                          <object class="AdwClamp">
+                            <property name="child">
+                              <object class="GtkBox">
+                                <property name="hexpand">True</property>
                                 <property name="margin-bottom">20</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="AdwPreferencesGroup">
+                                <property name="margin-end">20</property>
+                                <property name="margin-start">20</property>
+                                <property name="margin-top">20</property>
+                                <property name="orientation">vertical</property>
+                                <property name="spacing">20</property>
                                 <property name="valign">start</property>
                                 <child>
-                                  <object class="AdwActionRow">
-                                    <property name="accessible-role">row</property>
-                                    <property name="action-name">win.open_browse_for_journal</property>
-                                    <property name="activatable">True</property>
-                                    <property name="hexpand">True</property>
-                                    <property name="title">Journal location</property>
-                                    <property name="valign">center</property>
-                                    <property name="vexpand">True</property>
-                                    <child type="suffix">
-                                      <object class="GtkButton">
+                                  <object class="GtkLabel">
+                                    <property name="css-classes">heading</property>
+                                    <property name="justify">center</property>
+                                    <property name="label">Open an existing journal.</property>
+                                    <property name="margin-bottom">20</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="AdwPreferencesGroup">
+                                    <property name="valign">start</property>
+                                    <child>
+                                      <object class="AdwActionRow">
+                                        <property name="accessible-role">row</property>
                                         <property name="action-name">win.open_browse_for_journal</property>
-                                        <property name="child">
-                                          <object class="AdwButtonContent" id="existing_journal_location">
-                                            <property name="icon-name">document-open</property>
-                                            <property name="label">Browse</property>
+                                        <property name="activatable">True</property>
+                                        <property name="hexpand">True</property>
+                                        <property name="title">Journal location</property>
+                                        <property name="valign">center</property>
+                                        <property name="vexpand">True</property>
+                                        <child type="suffix">
+                                          <object class="GtkButton">
+                                            <property name="action-name">win.open_browse_for_journal</property>
+                                            <property name="child">
+                                              <object class="AdwButtonContent" id="existing_journal_location">
+                                                <property name="icon-name">document-open</property>
+                                                <property name="label">Browse</property>
+                                              </object>
+                                            </property>
+                                            <property name="halign">end</property>
+                                            <property name="margin-bottom">10</property>
+                                            <property name="margin-top">10</property>
+                                            <style/>
                                           </object>
-                                        </property>
-                                        <property name="halign">end</property>
-                                        <property name="margin-bottom">10</property>
-                                        <property name="margin-top">10</property>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="AdwPasswordEntryRow" id="existing_journal_password">
+                                        <property name="input-hints">no-spellcheck|private</property>
+                                        <property name="title">Password</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="AdwButtonRow">
+                                        <property name="action-name">win.open_journal</property>
+                                        <property name="start-icon-name">dialog-password-symbolic</property>
+                                        <property name="title">Open Journal</property>
                                         <style/>
                                       </object>
                                     </child>
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="AdwPasswordEntryRow" id="existing_journal_password">
-                                    <property name="input-hints">no-spellcheck|private</property>
-                                    <property name="title">Password</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="AdwButtonRow">
-                                    <property name="action-name">win.open_journal</property>
-                                    <property name="start-icon-name">dialog-password-symbolic</property>
-                                    <property name="title">Open Journal</property>
-                                    <style/>
+                                  <object class="GtkImage">
+                                    <property name="hexpand">True</property>
+                                    <property name="margin-top">20</property>
+                                    <property name="pixel-size">125</property>
+                                    <property name="resource">/journal/key.svg</property>
+                                    <property name="vexpand">True</property>
                                   </object>
                                 </child>
                               </object>
-                            </child>
-                            <child>
-                              <object class="GtkImage">
-                                <property name="hexpand">True</property>
-                                <property name="margin-top">20</property>
-                                <property name="pixel-size">125</property>
-                                <property name="resource">/journal/key.svg</property>
-                                <property name="vexpand">True</property>
-                              </object>
-                            </child>
+                            </property>
+                            <property name="maximum-size">1000</property>
+                            <property name="tightening-threshold">300</property>
+                            <property name="unit">px</property>
                           </object>
                         </property>
                         <property name="name">open-page</property>
