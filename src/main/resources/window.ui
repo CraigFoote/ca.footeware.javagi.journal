@@ -55,7 +55,7 @@
                     <child>
                       <object class="AdwViewStackPage">
                         <property name="child">
-                          <object class="AdwClamp" id="new_open_page_box">
+                          <object class="AdwClamp">
                             <property name="child">
                               <object class="GtkBox">
                                 <property name="hexpand">True</property>
