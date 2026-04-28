@@ -5,7 +5,7 @@
 
 	<groupId>ca.footeware.javagi</groupId>
 	<artifactId>journal</artifactId>
-	<version>1.4.0-SNAPSHOT</version>
+	<version>1.5.0-SNAPSHOT</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -87,7 +87,7 @@
 							<usingModules>false</usingModules>
 							<runtime>org.gnome.Platform</runtime>
 							<sdk>org.gnome.Sdk</sdk>
-							<runtimeVersion>49</runtimeVersion>
+							<runtimeVersion>50</runtimeVersion>
 							<categories>Office;Calendar</categories>
 							<iconPath>src/main/resources/journal.svg</iconPath>
 							<gschemaPath>src/main/resources/ca.footeware.javagi.journal.gschema.xml</gschemaPath>
@@ -198,6 +198,16 @@
 									</ul>
 									]]></description>
 								</release>
+								<release>
+									<version>1.5.0</version>
+									<date>2026-04-28</date>
+									<description><![CDATA[
+									<p>Upgraded runtime-version to 50.</p>
+									<ul>
+										<li>After Ubuntu 26.04 with GNOME 50, the 50 runtime should be stable and ubiquitous.</li>
+									</ul>
+									]]></description>
+								</release>
 							</releases>
 							<manifest>
 								<appId>ca.footeware.javagi.journal</appId>
@@ -205,13 +215,9 @@
 									<sdkExtension>org.freedesktop.Sdk.Extension.openjdk25</sdkExtension>
 								</sdkExtensions>
 								<finishArgs>
-									<finishArg>--socket=session-bus</finishArg>
 									<finishArg>--socket=wayland</finishArg>
-									<finishArg>--socket=ssh-auth</finishArg>
-									<finishArg>--device=dri</finishArg>
 									<finishArg>--share=network</finishArg>
-									<finishArg>--share=ipc</finishArg>
-									<finishArg>--filesystem=home</finishArg>
+									<finishArg>--filesystem=xdg-documents</finishArg>
 									<finishArg>--env=PATH=/app/jre/bin:/app/bin:/usr/bin</finishArg>
 									<finishArg>--env=JAVA_HOME=/app/jre</finishArg>
 								</finishArgs>
