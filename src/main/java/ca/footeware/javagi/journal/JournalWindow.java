@@ -57,8 +57,8 @@ public class JournalWindow extends ApplicationWindow {
 	private class CloseRequestHandler implements CloseRequestCallback {
 		@Override
 		public boolean run() {
-			settings.setInt("window-width", JournalWindow.this.getWidth());
-			settings.setInt("window-height", JournalWindow.this.getHeight());
+			int width = JournalWindow.this.getWidth();
+			int height = JournalWindow.this.getHeight();
 			if (isDirty()) {
 				AlertDialog alert = new AlertDialog("Unsaved Changes",
 						"Do you want to save your edits to " + previousDate + "?");
@@ -76,11 +76,13 @@ public class JournalWindow extends ApplicationWindow {
 					case "save": {
 						// save previous date's text & close window
 						save(convert(calendar.getDate()), getText());
+						saveWidthHeight(width, height);
 						break;
 					}
 					case DISCARD: {
 						// do nothing, close window
 						setDirtyTitle(false);
+						saveWidthHeight(width, height);
 						JournalWindow.this.close();
 						break;
 					}
@@ -95,7 +97,19 @@ public class JournalWindow extends ApplicationWindow {
 				});
 				return true; // keep window open until user decides
 			}
+			saveWidthHeight(width, height);
 			return false; // go ahead and close window
+		}
+
+		/**
+		 * Set the preferences for window width and height.
+		 * 
+		 * @param width
+		 * @param height
+		 */
+		private void saveWidthHeight(int width, int height) {
+			settings.setInt("window-width", width);
+			settings.setInt("window-height", height);
 		}
 	}
 
@@ -108,6 +122,12 @@ public class JournalWindow extends ApplicationWindow {
 		private LocalDate date;
 		private String text;
 
+		/**
+		 * Constructor.
+		 * 
+		 * @param date {@link LocalDate}
+		 * @param text {@link String}
+		 */
 		public SaveRunnable(LocalDate date, String text) {
 			this.date = date;
 			this.text = text;
@@ -135,6 +155,7 @@ public class JournalWindow extends ApplicationWindow {
 
 	private static final String CANCEL = "cancel";
 	private static final String DISCARD = "discard";
+	private static final String EDITOR_PAGE = "editor-page";
 
 	private static final String SAVE = "save";
 
@@ -189,9 +210,13 @@ public class JournalWindow extends ApplicationWindow {
 	 */
 	public JournalWindow(Application application) {
 		setApplication(application);
+		application.setAccelsForAction("win.save_journal", new String[] { "<ctrl>s" });
 		present();
 	}
 
+	/**
+	 * Listen for click events from the calendar.
+	 */
 	private void attachToYearAndMonthButtons() {
 		calendar.onNextMonth(this::onDateSelected);
 		calendar.onPrevMonth(this::onDateSelected);
@@ -199,15 +224,30 @@ public class JournalWindow extends ApplicationWindow {
 		calendar.onPrevYear(this::onDateSelected);
 	}
 
+	/**
+	 * Convert the provided {@link DateTime} to a {@link LocalDate}.
+	 * 
+	 * @param date {@link DateTime}
+	 * @return {@link LocalDate}
+	 */
 	private LocalDate convert(DateTime date) {
 		return LocalDate.of(date.getYear(), date.getMonth(), date.getDayOfMonth());
 	}
 
+	/**
+	 * Convert the provided {@link LocalDate} to a {@link DateTime}.
+	 * 
+	 * @param localDate {@link LocalDate}
+	 * @return {@link DateTime}
+	 */
 	private DateTime convert(LocalDate localDate) {
 		return new DateTime(TimeZone.local(), localDate.getYear(), localDate.getMonthValue(), localDate.getDayOfMonth(),
 				0, 0, 0);
 	}
 
+	/**
+	 * Create the calendar navigation actions.
+	 */
 	private void createCalendarNavigationActions() {
 		// First action
 		var firstAction = new SimpleAction("first", null);
@@ -235,6 +275,9 @@ public class JournalWindow extends ApplicationWindow {
 		super.addAction(lastAction);
 	}
 
+	/**
+	 * Create actions used on the editor page.
+	 */
 	private void createEditorPageActions() {
 		createCalendarNavigationActions();
 		attachToYearAndMonthButtons();
@@ -245,6 +288,9 @@ public class JournalWindow extends ApplicationWindow {
 		super.addAction(saveAction);
 	}
 
+	/**
+	 * Create actions used on the Create New Journal page.
+	 */
 	private void createNewJournalPageActions() {
 		// New -> Browse action
 		var newBrowseAction = new SimpleAction("new_browse_for_folder", null);
@@ -257,6 +303,9 @@ public class JournalWindow extends ApplicationWindow {
 		super.addAction(createNewJournalAction);
 	}
 
+	/**
+	 * Create actions used on the Open Existing Journal page.
+	 */
 	private void createOpenJournalPageActions() {
 		// Browse for existing journal action
 		var existingBrowseAction = new SimpleAction("open_browse_for_journal", null);
@@ -269,6 +318,9 @@ public class JournalWindow extends ApplicationWindow {
 		super.addAction(openJournalAction);
 	}
 
+	/**
+	 * Create actions related to those pages prior to the editor page.
+	 */
 	private void createPageNavigationActions() {
 		// Back action
 		var backAction = new SimpleAction("back", null);
@@ -297,6 +349,11 @@ public class JournalWindow extends ApplicationWindow {
 		super.addAction(openPageAction);
 	}
 
+	/**
+	 * Display the entry for the provided date in the editor.
+	 * 
+	 * @param date {@link LocalDate}
+	 */
 	private void displayDateEntry(LocalDate date) {
 		if (isDirty()) {
 			promptToSavePrevious(date);
@@ -328,6 +385,11 @@ public class JournalWindow extends ApplicationWindow {
 		return Objects.equals(stack, other.stack);
 	}
 
+	/**
+	 * Get the current text from the text editor.
+	 * 
+	 * @return {@link String}
+	 */
 	private String getText() {
 		TextIter startIter = new TextIter();
 		TextIter endIter = new TextIter();
@@ -386,10 +448,13 @@ public class JournalWindow extends ApplicationWindow {
 	 * @return boolean true if editor has unsaved edits and the title indicates
 	 *         dirty state
 	 */
-	private boolean isDirty() {
+	public boolean isDirty() {
 		return windowTitle.getTitle().startsWith("•") && textView.getBuffer().getModified();
 	}
 
+	/**
+	 * Mark all days in current month that have entries in the journal.
+	 */
 	private void markEntryDays() {
 		calendar.clearMarks();
 		List<LocalDate> entryDates = JournalManager.getEntryDates();
@@ -401,15 +466,26 @@ public class JournalWindow extends ApplicationWindow {
 		}
 	}
 
+	/**
+	 * Raise a pop-up message to the user.
+	 * 
+	 * @param message {@link String}
+	 */
 	private void notifyUser(String message) {
 		toaster.addToast(new Toast(message));
 	}
 
+	/**
+	 * Called when a change is made in the text editor.
+	 */
 	private void onBufferChanged() {
 		setDirtyTitle(true);
 		previousText = getText();
 	}
 
+	/**
+	 * Create New Journal button handler.
+	 */
 	private void onCreateNewJournalAction() {
 		String password1 = newJournalPassword1.getText();
 		String password2 = newJournalPassword2.getText();
@@ -417,7 +493,7 @@ public class JournalWindow extends ApplicationWindow {
 			try {
 				JournalManager.createJournal(file, password2);
 				JournalManager.saveJournal();
-				stack.setVisibleChildName("editor-page");
+				stack.setVisibleChildName(EDITOR_PAGE);
 				backButton.setVisible(false);
 				windowTitle.setSubtitle(file.getPath());
 			} catch (IOException | JournalException e) {
@@ -454,11 +530,17 @@ public class JournalWindow extends ApplicationWindow {
 		});
 	}
 
+	/**
+	 * First button handler.
+	 */
 	private void onFirstAction() {
 		DateTime dateTime = convert(JournalManager.getFirstEntryDate());
 		calendar.setDate(dateTime);
 	}
 
+	/**
+	 * Last button handler.
+	 */
 	private void onLastAction() {
 		DateTime dateTime = convert(JournalManager.getLastEntryDate());
 		calendar.setDate(dateTime);
@@ -481,6 +563,9 @@ public class JournalWindow extends ApplicationWindow {
 		});
 	}
 
+	/**
+	 * Next button handler.
+	 */
 	private void onNextAction() {
 		DateTime dateTime = calendar.getDate();
 		LocalDate nextEntryDate = JournalManager.getNextEntryDate(convert(dateTime));
@@ -496,7 +581,7 @@ public class JournalWindow extends ApplicationWindow {
 		if (file != null) {
 			try {
 				JournalManager.openJournal(file, password);
-				stack.setVisibleChildName("editor-page");
+				stack.setVisibleChildName(EDITOR_PAGE);
 				backButton.setVisible(false);
 				markEntryDays();
 				textView.grabFocus();
@@ -512,6 +597,9 @@ public class JournalWindow extends ApplicationWindow {
 		}
 	}
 
+	/**
+	 * Previous button handler.
+	 */
 	private void onPreviousAction() {
 		DateTime dateTime = calendar.getDate();
 		LocalDate nextEntryDate = JournalManager.getPreviousEntryDate(convert(dateTime));
@@ -522,8 +610,10 @@ public class JournalWindow extends ApplicationWindow {
 	 * Save button handler.
 	 */
 	private void onSaveAction() {
-		LocalDate localDate = convert(calendar.getDate());
-		save(localDate, getText());
+		if (EDITOR_PAGE.equals(stack.getVisibleChildName())) {
+			LocalDate localDate = convert(calendar.getDate());
+			save(localDate, getText());
+		}
 	}
 
 	/**
@@ -593,9 +683,13 @@ public class JournalWindow extends ApplicationWindow {
 	 */
 	private void save(LocalDate date, String text) {
 		(new Thread(new SaveRunnable(date, text))).start();
-
 	}
 
+	/**
+	 * Indicate the editor is dirty by changing the window title to prepend a "•".
+	 * 
+	 * @param dirty boolean
+	 */
 	private void setDirtyTitle(boolean dirty) {
 		windowTitle.setTitle(dirty ? "• Journal" : "Journal");
 	}

@@ -38,6 +38,9 @@ public class JournalApplication extends Application {
 
 	private GtkBuilder builder;
 
+	/**
+	 * Constructor.
+	 */
 	public JournalApplication() {
 		setApplicationId("ca.footeware.javagi.journal");
 		setFlags(ApplicationFlags.DEFAULT_FLAGS);
@@ -95,7 +98,19 @@ public class JournalApplication extends Application {
 		setAccelsForAction("app.show-help-overlay", new String[] { "<ctrl>question" });
 		addAction(shortcutsAction);
 
+		var quitAction = new SimpleAction("quit", null);
+		quitAction.onActivate(this::onQuitAction);
+		setAccelsForAction("app.quit", new String[] { "<ctrl>q" });
+		addAction(quitAction);
+
 		builder = new GtkBuilder();
+	}
+
+	private void onQuitAction(Variant parameter) {
+		Window win = this.getActiveWindow();
+		if (win instanceof JournalWindow window) {
+			window.close();
+		}
 	}
 
 	// @formatter:off
@@ -125,6 +140,9 @@ public class JournalApplication extends Application {
  	}
  	// @formatter:on
 
+	/**
+	 * Respond to the Shortcuts menu item.
+	 */
 	private void onShortcutsAction(Variant variant) {
 		try {
 			builder.addFromResource("/journal/help_overlay.ui");
