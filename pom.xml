@@ -5,7 +5,7 @@
 
 	<groupId>ca.footeware.javagi</groupId>
 	<artifactId>journal</artifactId>
-	<version>1.6.0-SNAPSHOT</version>
+	<version>1.7.0-SNAPSHOT</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -14,7 +14,7 @@
 	</properties>
 
 	<dependencies>
-        <!--Java on Gtk4/Adw-->
+		<!--Java on Gtk4/Adw-->
 		<dependency>
 			<groupId>org.java-gi</groupId>
 			<artifactId>adw</artifactId>
@@ -28,7 +28,7 @@
 				<directory>src/main/resources/</directory>
 			</resource>
 			<resource>
-                <!--project.properties needs string injection or filtering-->
+				<!--project.properties needs string injection or filtering-->
 				<directory>src/main/resources/filtered</directory>
 				<includes>
 					<include>project.properties</include>
@@ -38,7 +38,7 @@
 		</resources>
 
 		<plugins>
-            <!--project.properties above needs to be handled in UTF-8-->
+			<!--project.properties above needs to be handled in UTF-8-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
@@ -48,7 +48,7 @@
 				</configuration>
 			</plugin>
 
-            <!--The initialize phase is early, before package. Here we are compiling a gresource file-->
+			<!--The initialize phase is early, before package. Here we are compiling a gresource file-->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
@@ -146,8 +146,18 @@
 								<vmArg>--enable-native-access=ALL-UNNAMED</vmArg>
 							</vmArgs>
 							<releases>
-              					<!--descriptions must contain <p>, <ul> and <li> tags in CDATA block.-->
+								<!--descriptions must contain <p>, <ul> and <li> tags in CDATA block.-->
 								<!--see https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-description-->
+								<release>
+									<version>1.7.0</version>
+									<date>2026-05-10</date>
+									<description><![CDATA[
+									<p>Animations</p>
+									<ul>
+										<li>'Key' images on create- and open journal now fade before editor is displayed.</li>
+									</ul>
+									]]></description>
+								</release>
 								<release>
 									<version>1.6.0</version>
 									<date>2026-05-05</date>
@@ -254,17 +264,15 @@
 
 	<scm>
 		<url>https://github.com/CraigFoote/ca.footeware.javagi.journal</url>
-		<connection>
-			scm:git:https://github.com/CraigFoote/ca.footeware.javagi.journal.git</connection>
-		<developerConnection>
-			scm:git:https://github.com/CraigFoote/ca.footeware.javagi.journal.git</developerConnection>
+		<connection>scm:git:https://github.com/CraigFoote/ca.footeware.javagi.journal.git</connection>
+		<developerConnection>scm:git:https://github.com/CraigFoote/ca.footeware.javagi.journal.git</developerConnection>
 	</scm>
-	
+
 	<issueManagement>
 		<url>https://github.com/CraigFoote/ca.footeware.javagi.journal/issues</url>
 		<system>Github</system>
 	</issueManagement>
-	
+
 	<!--necessary until flatpak-maven-plugin is released-->
 	<pluginRepositories>
 		<pluginRepository>

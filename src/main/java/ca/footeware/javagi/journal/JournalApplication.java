@@ -143,7 +143,7 @@ public class JournalApplication extends Application {
 	/**
 	 * Respond to the Shortcuts menu item.
 	 */
-	private void onShortcutsAction(Variant variant) {
+	private void onShortcutsAction(Variant parameter) {
 		try {
 			builder.addFromResource("/journal/help_overlay.ui");
 			if (builder.getObject("help_overlay") instanceof Window window) {

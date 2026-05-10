@@ -173,7 +173,7 @@
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="GtkImage">
+                                  <object class="GtkImage" id="new_journal_key">
                                     <property name="hexpand">True</property>
                                     <property name="margin-top">20</property>
                                     <property name="pixel-size">125</property>
@@ -259,7 +259,7 @@
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="GtkImage">
+                                  <object class="GtkImage" id="existing_journal_key">
                                     <property name="hexpand">True</property>
                                     <property name="margin-top">20</property>
                                     <property name="pixel-size">125</property>
@@ -398,4 +398,6 @@
       </item>
     </section>
   </menu>
+  <object class="AdwTimedAnimation"/>
+  <object class="AdwTimedAnimation"/>
 </interface>

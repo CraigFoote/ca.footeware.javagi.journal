@@ -7,11 +7,16 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.gnome.adw.AlertDialog;
+import org.gnome.adw.Animation;
+import org.gnome.adw.Animation.DoneCallback;
+import org.gnome.adw.AnimationTarget;
 import org.gnome.adw.Application;
 import org.gnome.adw.ApplicationWindow;
 import org.gnome.adw.ButtonContent;
+import org.gnome.adw.CallbackAnimationTarget;
 import org.gnome.adw.PasswordEntryRow;
 import org.gnome.adw.ResponseAppearance;
+import org.gnome.adw.TimedAnimation;
 import org.gnome.adw.Toast;
 import org.gnome.adw.ToastOverlay;
 import org.gnome.adw.ViewStack;
@@ -28,12 +33,14 @@ import org.gnome.gtk.Calendar;
 import org.gnome.gtk.CssProvider;
 import org.gnome.gtk.FileDialog;
 import org.gnome.gtk.Gtk;
+import org.gnome.gtk.Image;
 import org.gnome.gtk.ProgressBar;
 import org.gnome.gtk.TextBuffer;
 import org.gnome.gtk.TextBufferCommitNotify;
 import org.gnome.gtk.TextBufferNotifyFlags;
 import org.gnome.gtk.TextIter;
 import org.gnome.gtk.TextView;
+import org.gnome.gtk.Widget;
 import org.gnome.gtk.WrapMode;
 import org.javagi.base.GErrorException;
 import org.javagi.gobject.annotations.InstanceInit;
@@ -202,6 +209,12 @@ public class JournalWindow extends ApplicationWindow {
 
 	@GtkChild(name = "window_title")
 	public WindowTitle windowTitle;
+
+	@GtkChild(name = "new_journal_key")
+	public Image newJournalKey;
+
+	@GtkChild(name = "existing_journal_key")
+	public Image existingJournalKey;
 
 	/**
 	 * Constructor.
@@ -492,11 +505,16 @@ public class JournalWindow extends ApplicationWindow {
 		if (file != null && !password1.isEmpty() && !password2.isEmpty() && password1.equals(password2)) {
 			try {
 				JournalManager.createJournal(file, password2);
-				JournalManager.saveJournal();
-				stack.setVisibleChildName(EDITOR_PAGE);
-				backButton.setVisible(false);
-				windowTitle.setSubtitle(file.getPath());
-			} catch (IOException | JournalException e) {
+				fadeWidget(newJournalKey, new DoneCallback() {
+					@Override
+					public void run() {
+						stack.setVisibleChildName(EDITOR_PAGE);
+						backButton.setVisible(false);
+						windowTitle.setSubtitle(file.getPath());
+						textView.grabFocus();
+					}
+				});
+			} catch (IOException e) {
 				notifyUser(e.getMessage());
 			}
 		}
@@ -581,20 +599,40 @@ public class JournalWindow extends ApplicationWindow {
 		if (file != null) {
 			try {
 				JournalManager.openJournal(file, password);
-				stack.setVisibleChildName(EDITOR_PAGE);
-				backButton.setVisible(false);
-				markEntryDays();
-				textView.grabFocus();
-				calendar.setDate(DateTime.nowLocal());
-				displayDateEntry(LocalDate.now());
-				windowTitle.setSubtitle(file.getPath());
-				// clear above indication of change
-				textView.getBuffer().setModified(false);
-				setDirtyTitle(false);
+				JournalManager.saveJournal(); // if overwriting an existing file
+				fadeWidget(existingJournalKey, new DoneCallback() {
+					@Override
+					public void run() {
+						stack.setVisibleChildName(EDITOR_PAGE);
+						backButton.setVisible(false);
+						calendar.setDate(DateTime.nowLocal());
+						displayDateEntry(LocalDate.now());
+						markEntryDays();
+						windowTitle.setSubtitle(file.getPath());
+						textView.grabFocus();
+					}
+				});
 			} catch (JournalException e) {
 				notifyUser(e.getMessage());
 			}
 		}
+	}
+
+	/**
+	 * Animate a fade of the provided {@link Widget} by changing its opacity.
+	 * 
+	 * @param key    {@link Widget}
+	 * @param onDone {@link DoneCallback} what to do after animation is complete
+	 */
+	private void fadeWidget(Widget widget, DoneCallback onDone) {
+		AnimationTarget target = new CallbackAnimationTarget(widget::setOpacity);
+		/* 
+		 * (widget, start-double, end-double, duration, target)
+		 * opacity 1 is opaque and 0 is transparent
+		 */
+		Animation animation = new TimedAnimation(widget, 1.0, 0, 2000, target);
+		animation.onDone(onDone);
+		animation.play();
 	}
 
 	/**
