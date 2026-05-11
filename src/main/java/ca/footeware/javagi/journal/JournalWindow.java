@@ -110,7 +110,7 @@ public class JournalWindow extends ApplicationWindow {
 
 		/**
 		 * Set the preferences for window width and height.
-		 * 
+		 *
 		 * @param width
 		 * @param height
 		 */
@@ -131,7 +131,7 @@ public class JournalWindow extends ApplicationWindow {
 
 		/**
 		 * Constructor.
-		 * 
+		 *
 		 * @param date {@link LocalDate}
 		 * @param text {@link String}
 		 */
@@ -172,6 +172,9 @@ public class JournalWindow extends ApplicationWindow {
 	@GtkChild(name = "calendar")
 	public Calendar calendar;
 
+	@GtkChild(name = "existing_journal_key")
+	public Image existingJournalKey;
+
 	@GtkChild(name = "existing_journal_location")
 	public ButtonContent existingJournalLocation;
 
@@ -179,6 +182,9 @@ public class JournalWindow extends ApplicationWindow {
 	public PasswordEntryRow existingJournalPassword;
 
 	private File file = null;
+
+	@GtkChild(name = "new_journal_key")
+	public Image newJournalKey;
 
 	@GtkChild(name = "new_journal_location")
 	public ButtonContent newJournalLocation;
@@ -210,12 +216,6 @@ public class JournalWindow extends ApplicationWindow {
 	@GtkChild(name = "window_title")
 	public WindowTitle windowTitle;
 
-	@GtkChild(name = "new_journal_key")
-	public Image newJournalKey;
-
-	@GtkChild(name = "existing_journal_key")
-	public Image existingJournalKey;
-
 	/**
 	 * Constructor.
 	 *
@@ -239,7 +239,7 @@ public class JournalWindow extends ApplicationWindow {
 
 	/**
 	 * Convert the provided {@link DateTime} to a {@link LocalDate}.
-	 * 
+	 *
 	 * @param date {@link DateTime}
 	 * @return {@link LocalDate}
 	 */
@@ -249,7 +249,7 @@ public class JournalWindow extends ApplicationWindow {
 
 	/**
 	 * Convert the provided {@link LocalDate} to a {@link DateTime}.
-	 * 
+	 *
 	 * @param localDate {@link LocalDate}
 	 * @return {@link DateTime}
 	 */
@@ -364,7 +364,7 @@ public class JournalWindow extends ApplicationWindow {
 
 	/**
 	 * Display the entry for the provided date in the editor.
-	 * 
+	 *
 	 * @param date {@link LocalDate}
 	 */
 	private void displayDateEntry(LocalDate date) {
@@ -399,8 +399,25 @@ public class JournalWindow extends ApplicationWindow {
 	}
 
 	/**
+	 * Animate a fade of the provided {@link Widget} by changing its opacity.
+	 *
+	 * @param key    {@link Widget}
+	 * @param onDone {@link DoneCallback} what to do after animation is complete
+	 */
+	private void fadeWidget(Widget widget, DoneCallback onDone) {
+		AnimationTarget target = new CallbackAnimationTarget(widget::setOpacity);
+		/*
+		 * (widget, start-double, end-double, duration, target)
+		 * opacity 1 is opaque and 0 is transparent
+		 */
+		Animation animation = new TimedAnimation(widget, 1.0, 0, 2000, target);
+		animation.onDone(onDone);
+		animation.play();
+	}
+
+	/**
 	 * Get the current text from the text editor.
-	 * 
+	 *
 	 * @return {@link String}
 	 */
 	private String getText() {
@@ -481,7 +498,7 @@ public class JournalWindow extends ApplicationWindow {
 
 	/**
 	 * Raise a pop-up message to the user.
-	 * 
+	 *
 	 * @param message {@link String}
 	 */
 	private void notifyUser(String message) {
@@ -619,23 +636,6 @@ public class JournalWindow extends ApplicationWindow {
 	}
 
 	/**
-	 * Animate a fade of the provided {@link Widget} by changing its opacity.
-	 * 
-	 * @param key    {@link Widget}
-	 * @param onDone {@link DoneCallback} what to do after animation is complete
-	 */
-	private void fadeWidget(Widget widget, DoneCallback onDone) {
-		AnimationTarget target = new CallbackAnimationTarget(widget::setOpacity);
-		/* 
-		 * (widget, start-double, end-double, duration, target)
-		 * opacity 1 is opaque and 0 is transparent
-		 */
-		Animation animation = new TimedAnimation(widget, 1.0, 0, 2000, target);
-		animation.onDone(onDone);
-		animation.play();
-	}
-
-	/**
 	 * Previous button handler.
 	 */
 	private void onPreviousAction() {
@@ -725,7 +725,7 @@ public class JournalWindow extends ApplicationWindow {
 
 	/**
 	 * Indicate the editor is dirty by changing the window title to prepend a "•".
-	 * 
+	 *
 	 * @param dirty boolean
 	 */
 	private void setDirtyTitle(boolean dirty) {
