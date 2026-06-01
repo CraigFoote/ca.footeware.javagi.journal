@@ -4,7 +4,10 @@
 package ca.footeware.javagi.journal.model;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -18,6 +21,8 @@ import java.util.Map;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+
+import org.javagi.base.Filename;
 
 /**
  * Provides a read/write interface to the {@link Journal} using
@@ -52,7 +57,14 @@ public class JournalManager {
 	 * @throws IOException
 	 */
 	public static void createJournal(org.gnome.gio.File file, String password) throws IOException {
-		createJournal(file.getPath(), password);
+		if (file == null) {
+			throw new FileNotFoundException("File is null");
+		}
+		Filename pathName = file.getPath();
+		if (pathName == null) {
+			throw new IOException("Error: file path is null.");
+		}
+		createJournal(pathName.toString(), password);
 	}
 
 	/**
@@ -66,14 +78,18 @@ public class JournalManager {
 	public static void createJournal(String pathName, String password) throws IOException {
 		File file = new File(pathName);
 		if (file.exists()) {
+			// Gtk.FileDialog will have prompted to replace (I hope)
+			boolean fileDeleted = Files.deleteIfExists(Path.of(pathName));
+			if (!fileDeleted) {
+				throw new IOException("Unknown error, file could not be overwritten.");
+			}
+			file = new File(pathName);
+		}
+		boolean fileCreated = file.createNewFile();
+		if (fileCreated) {
 			journal = new Journal(file, password);
 		} else {
-			boolean fileCreated = file.createNewFile();
-			if (fileCreated) {
-				journal = new Journal(file, password);
-			} else {
-				throw new IOException("Error: file " + pathName + " already exists.");
-			}
+			throw new IOException("Error: file " + pathName + " could not be created.");
 		}
 	}
 
@@ -212,7 +228,14 @@ public class JournalManager {
 	 */
 	public static void openJournal(org.gnome.gio.File file, String password) throws JournalException {
 		try {
-			openJournal(file.getPath(), password);
+			if (file == null) {
+				throw new JournalException("Error: null journal file.");
+			}
+			Filename pathName = file.getPath();
+			if (pathName == null) {
+				throw new JournalException("Error: journal filename was null.");
+			}
+			openJournal(pathName.toString(), password);
 		} catch (IOException e) {
 			throw new JournalException(e.getMessage(), e);
 		}

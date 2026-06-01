@@ -106,13 +106,6 @@ public class JournalApplication extends Application {
 		builder = new GtkBuilder();
 	}
 
-	private void onQuitAction(Variant parameter) {
-		Window win = this.getActiveWindow();
-		if (win instanceof JournalWindow window) {
-			window.close();
-		}
-	}
-
 	// @formatter:off
 	private void onAboutAction(Variant parameter) {
 		String version = "unknown";
@@ -139,6 +132,13 @@ public class JournalApplication extends Application {
         about.present(this.getActiveWindow());
  	}
  	// @formatter:on
+
+	private void onQuitAction(Variant parameter) {
+		Window win = this.getActiveWindow();
+		if (win instanceof JournalWindow window) {
+			window.close();
+		}
+	}
 
 	/**
 	 * Respond to the Shortcuts menu item.

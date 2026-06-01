@@ -5,7 +5,7 @@
 
 	<groupId>ca.footeware.javagi</groupId>
 	<artifactId>journal</artifactId>
-	<version>1.7.0-SNAPSHOT</version>
+	<version>1.8.0-SNAPSHOT</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -18,7 +18,7 @@
 		<dependency>
 			<groupId>org.java-gi</groupId>
 			<artifactId>adw</artifactId>
-			<version>0.15.0</version>
+			<version>1.0.0-RC1</version>
 		</dependency>
 	</dependencies>
 
@@ -149,6 +149,19 @@
 								<!--descriptions must contain <p>, <ul> and <li> tags in CDATA block.-->
 								<!--see https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-description-->
 								<release>
+									<version>1.8.0</version>
+									<date>2026-05-31</date>
+									<description><![CDATA[
+									<p>Dependencies and finishArgs</p>
+									<ul>
+										<li>Now depending on 1.0.0-RC1 of java-gi.</li>
+										<li>Updated File API usage to accomodate changes.</li>
+										<li>Removed share finishArg; relying on portals.</li>
+										<li>Kept 'filesystem=xdg-documents' to display nice pathNames in '/home/user/Documents' rather than '/run/user/' path.</li>
+									</ul>
+									]]></description>
+								</release>
+								<release>
 									<version>1.7.0</version>
 									<date>2026-05-10</date>
 									<description><![CDATA[
@@ -236,8 +249,8 @@
 								</sdkExtensions>
 								<finishArgs>
 									<finishArg>--socket=wayland</finishArg>
-									<finishArg>--share=network</finishArg>
-									<finishArg>--filesystem=xdg-documents</finishArg>
+									<finishArg>--socket=x11</finishArg> <!--fallback-->
+									<finishArg>--filesystem=xdg-documents</finishArg> <!--/home/user/Documents-->
 									<finishArg>--env=PATH=/app/jre/bin:/app/bin:/usr/bin</finishArg>
 									<finishArg>--env=JAVA_HOME=/app/jre</finishArg>
 								</finishArgs>

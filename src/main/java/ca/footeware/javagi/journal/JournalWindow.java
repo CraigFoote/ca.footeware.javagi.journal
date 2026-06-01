@@ -42,6 +42,7 @@ import org.gnome.gtk.TextIter;
 import org.gnome.gtk.TextView;
 import org.gnome.gtk.Widget;
 import org.gnome.gtk.WrapMode;
+import org.javagi.base.Filename;
 import org.javagi.base.GErrorException;
 import org.javagi.gobject.annotations.InstanceInit;
 import org.javagi.gtk.annotations.GtkCallback;
@@ -416,6 +417,23 @@ public class JournalWindow extends ApplicationWindow {
 	}
 
 	/**
+	 * Gets the pathName (path+filename) of the selected file.
+	 * 
+	 * @return {@link String}
+	 * @throws JournalException if the filePath cannot be determined
+	 */
+	private String getFilePathName() throws JournalException {
+		if (file == null) {
+			throw new JournalException("Error: null journal file.");
+		}
+		Filename path = file.getPath();
+		if (path == null) {
+			throw new JournalException("Error: journal filename was null.");
+		}
+		return path.toString();
+	}
+
+	/**
 	 * Get the current text from the text editor.
 	 *
 	 * @return {@link String}
@@ -519,21 +537,29 @@ public class JournalWindow extends ApplicationWindow {
 	private void onCreateNewJournalAction() {
 		String password1 = newJournalPassword1.getText();
 		String password2 = newJournalPassword2.getText();
-		if (file != null && !password1.isEmpty() && !password2.isEmpty() && password1.equals(password2)) {
-			try {
-				JournalManager.createJournal(file, password2);
-				fadeWidget(newJournalKey, new DoneCallback() {
-					@Override
-					public void run() {
-						stack.setVisibleChildName(EDITOR_PAGE);
-						backButton.setVisible(false);
-						windowTitle.setSubtitle(file.getPath());
-						textView.grabFocus();
-					}
-				});
-			} catch (IOException e) {
-				notifyUser(e.getMessage());
+
+		try {
+			String pathName = getFilePathName();
+
+			if (password1.isEmpty() || password2.isEmpty()) {
+				throw new JournalException("Error: password fields cannot be empty.");
 			}
+			if (!password1.equals(password2)) {
+				throw new JournalException("Error: password fields must match.");
+			}
+
+			JournalManager.createJournal(file, password2);
+			fadeWidget(newJournalKey, new DoneCallback() {
+				@Override
+				public void run() {
+					stack.setVisibleChildName(EDITOR_PAGE);
+					backButton.setVisible(false);
+					windowTitle.setSubtitle(pathName);
+					textView.grabFocus();
+				}
+			});
+		} catch (IOException | JournalException e) {
+			notifyUser(e.getMessage());
 		}
 	}
 
@@ -557,7 +583,7 @@ public class JournalWindow extends ApplicationWindow {
 		fileDialog.open(this, null, (_, result, _) -> {
 			try {
 				file = fileDialog.openFinish(result);
-				existingJournalLocation.setLabel(file.getPath());
+				existingJournalLocation.setLabel(file.getPath().toString());
 				existingJournalPassword.grabFocus();
 			} catch (GErrorException _) {
 				// ignore - user closed dialog
@@ -569,16 +595,24 @@ public class JournalWindow extends ApplicationWindow {
 	 * First button handler.
 	 */
 	private void onFirstAction() {
-		DateTime dateTime = convert(JournalManager.getFirstEntryDate());
-		calendar.setDate(dateTime);
+		LocalDate firstEntryDate = JournalManager.getFirstEntryDate();
+		if (firstEntryDate != null) {
+			DateTime dateTime = convert(firstEntryDate);
+			calendar.setDate(dateTime);
+		}
+		// else do not raise error; do nothing
 	}
 
 	/**
 	 * Last button handler.
 	 */
 	private void onLastAction() {
-		DateTime dateTime = convert(JournalManager.getLastEntryDate());
-		calendar.setDate(dateTime);
+		LocalDate lastEntryDate = JournalManager.getLastEntryDate();
+		if (lastEntryDate != null) {
+			DateTime dateTime = convert(lastEntryDate);
+			calendar.setDate(dateTime);
+		}
+		// else do not raise error; do nothing
 	}
 
 	/**
@@ -590,7 +624,7 @@ public class JournalWindow extends ApplicationWindow {
 		fileDialog.save(this, null, (_, result, _) -> {
 			try {
 				file = fileDialog.saveFinish(result);
-				newJournalLocation.setLabel(file.getPath());
+				newJournalLocation.setLabel(file.getPath().toString());
 				newJournalPassword1.grabFocus();
 			} catch (GErrorException _) {
 				// ignore - user closed dialog
@@ -613,25 +647,31 @@ public class JournalWindow extends ApplicationWindow {
 	 */
 	private void onOpenJournalAction() {
 		String password = existingJournalPassword.getText();
-		if (file != null) {
-			try {
-				JournalManager.openJournal(file, password);
-				JournalManager.saveJournal(); // if overwriting an existing file
-				fadeWidget(existingJournalKey, new DoneCallback() {
-					@Override
-					public void run() {
-						stack.setVisibleChildName(EDITOR_PAGE);
-						backButton.setVisible(false);
-						calendar.setDate(DateTime.nowLocal());
-						displayDateEntry(LocalDate.now());
-						markEntryDays();
-						windowTitle.setSubtitle(file.getPath());
-						textView.grabFocus();
-					}
-				});
-			} catch (JournalException e) {
-				notifyUser(e.getMessage());
+		try {
+			if (file == null) {
+				throw new JournalException("Error: null journal file.");
 			}
+			Filename path = file.getPath();
+			if (path == null) {
+				throw new JournalException("Error: journal filename was null.");
+			}
+
+			JournalManager.openJournal(file, password);
+			JournalManager.saveJournal(); // if overwriting an existing file
+			fadeWidget(existingJournalKey, new DoneCallback() {
+				@Override
+				public void run() {
+					stack.setVisibleChildName(EDITOR_PAGE);
+					backButton.setVisible(false);
+					calendar.setDate(DateTime.nowLocal());
+					displayDateEntry(LocalDate.now());
+					markEntryDays();
+					windowTitle.setSubtitle(path.toString());
+					textView.grabFocus();
+				}
+			});
+		} catch (JournalException e) {
+			notifyUser(e.getMessage());
 		}
 	}
 
