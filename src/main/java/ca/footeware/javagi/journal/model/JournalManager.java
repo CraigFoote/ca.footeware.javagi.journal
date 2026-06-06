@@ -220,7 +220,7 @@ public class JournalManager {
 	}
 
 	/**
-	 * OPens an existing journal in provided file with provided password.
+	 * Opens an existing journal in provided file with provided password.
 	 *
 	 * @param file     {@link org.gnome.gio.File}
 	 * @param password {@link String}

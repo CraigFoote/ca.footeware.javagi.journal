@@ -100,10 +100,11 @@ public class Journal {
 	 * @throws BadPaddingException
 	 * @throws InvalidAlgorithmParameterException
 	 * @throws InvalidKeySpecException
+	 * @throws JournalException 
 	 */
 	public String getEntry(String key)
 			throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException,
-			BadPaddingException, InvalidAlgorithmParameterException, InvalidKeySpecException {
+			BadPaddingException, InvalidAlgorithmParameterException, InvalidKeySpecException, IllegalArgumentException {
 		String encrypted = map.get(key);
 		if (encrypted != null) {
 			return Superstar.decrypt(encrypted, password);
@@ -128,18 +129,19 @@ public class Journal {
 	 * Checks the password can decrypt an entry.
 	 *
 	 * @return boolean true if password worked
+	 * @throws JournalException 
 	 */
-	public boolean testPassword() {
+	public boolean testPassword() throws JournalException {
 		if (!map.isEmpty()) {
 			Entry<String, String> entry = map.entrySet().iterator().next();
 			try {
 				Superstar.decrypt(entry.getValue(), password);
 			} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
 					| InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException
-					| InvalidKeySpecException _) {
-				return false;
+					| InvalidKeySpecException | IllegalArgumentException e) {
+				throw new JournalException(e.getMessage(), e);
 			}
 		}
-		return true;
+		return true; // new journal
 	}
 }

@@ -5,7 +5,7 @@
 
 	<groupId>ca.footeware.javagi</groupId>
 	<artifactId>journal</artifactId>
-	<version>1.8.0-SNAPSHOT</version>
+	<version>1.9.0-SNAPSHOT</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -148,6 +148,16 @@
 							<releases>
 								<!--descriptions must contain <p>, <ul> and <li> tags in CDATA block.-->
 								<!--see https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-description-->
+								<release>
+									<version>1.9.0</version>
+									<date>2026-06-05</date>
+									<description><![CDATA[
+									<p>Exception handling</p>
+									<ul>
+										<li>Percolate decryption exceptions to toaster.</li>
+									</ul>
+									]]></description>
+								</release>
 								<release>
 									<version>1.8.0</version>
 									<date>2026-05-31</date>

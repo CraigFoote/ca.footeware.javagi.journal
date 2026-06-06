@@ -35,13 +35,18 @@ public class Superstar {
 	 * @throws IllegalBlockSizeException
 	 * @throws BadPaddingException
 	 * @throws InvalidKeySpecException
+	 * @throws IllegalArgumentException
 	 */
 	public static String decrypt(String encryptedData, String password) throws NoSuchAlgorithmException,
 			NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException,
-			BadPaddingException, InvalidKeySpecException {
+			BadPaddingException, InvalidKeySpecException, IllegalArgumentException {
 
 		// Decode the Base64 encoded data
 		byte[] combined = Base64.getDecoder().decode(encryptedData);
+
+		if (combined.length < 28) {
+			throw new IllegalArgumentException("Error: decryption failed, less than 28 bytes.");
+		}
 
 		// Extract salt (first 16 bytes)
 		byte[] salt = new byte[16];
