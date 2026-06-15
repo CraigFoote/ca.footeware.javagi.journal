@@ -411,7 +411,7 @@ public class JournalWindow extends ApplicationWindow {
 		 * (widget, start-double, end-double, duration, target)
 		 * opacity 1 is opaque and 0 is transparent
 		 */
-		Animation animation = new TimedAnimation(widget, 1.0, 0, 2000, target);
+		Animation animation = new TimedAnimation(widget, 1.0, 0, 1000, target);
 		animation.onDone(onDone);
 		animation.play();
 	}
